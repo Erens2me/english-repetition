@@ -1,0 +1,179 @@
+{
+  "format": "english-repetition-card-pack",
+  "version": 1,
+  "id": "english-repetition-demo-7-v1",
+  "title": "Starter example pack · 7 sample cards (NOT the 700-card curriculum)",
+  "cards": [
+    {
+      "id": "daily-001",
+      "category": "daily",
+      "level": "B1",
+      "context": "daily life",
+      "skill": "speaking",
+      "question": "Arkadaşım gelene kadar burada bekleyeceğim.",
+      "answer": "I'll wait here until my friend arrives.",
+      "grammar": [
+        "future time clauses"
+      ],
+      "vocabulary": [
+        "wait",
+        "arrive"
+      ],
+      "blankTargets": [
+        "until",
+        "arrives"
+      ],
+      "grammarHint": "After until, use the present simple to refer to a future event.",
+      "vocabularyNotes": [
+        "arrive = reach a place; arrive at school / arrive in Istanbul."
+      ]
+    },
+    {
+      "id": "situation-001",
+      "category": "situation",
+      "level": "B1",
+      "context": "restaurant",
+      "skill": "speaking",
+      "question": "You're at a café and you're ready to pay. Politely ask for the bill.",
+      "answer": "Could I have the bill, please?",
+      "grammar": [
+        "polite requests",
+        "modal verbs"
+      ],
+      "vocabulary": [
+        "bill"
+      ],
+      "blankTargets": [
+        "Could",
+        "bill"
+      ],
+      "vocabularyNotes": [
+        "bill = a request for payment in a restaurant (UK/US); in US English, check is also common in restaurants.",
+        "bill can also mean a proposed law or a banknote, depending on context."
+      ]
+    },
+    {
+      "id": "grammar-001",
+      "category": "grammar",
+      "level": "B2",
+      "context": "school",
+      "skill": "grammar",
+      "question": "You didn't know about yesterday's exam and didn't study enough. Imagine the opposite past situation. Use the third conditional.",
+      "answer": "If I had known about the exam, I would have studied harder.",
+      "grammar": [
+        "third conditional",
+        "past perfect"
+      ],
+      "vocabulary": [
+        "exam"
+      ],
+      "blankTargets": [
+        "had known",
+        "would have"
+      ],
+      "grammarHint": "If + had + past participle, would have + past participle."
+    },
+    {
+      "id": "vocabulary-001",
+      "category": "vocabulary",
+      "level": "B1",
+      "context": "school",
+      "skill": "speaking",
+      "question": "Your classmate is confused by a problem. Reassure them that you will solve it together. Use 'figure out'.",
+      "answer": "We'll figure it out together.",
+      "grammar": [
+        "will for spontaneous decisions"
+      ],
+      "vocabulary": [
+        "figure out"
+      ],
+      "blankTargets": [
+        "figure",
+        "out"
+      ],
+      "vocabularyNotes": [
+        "figure out = understand or solve something.",
+        "figure (noun) can also mean a number, a shape, or a person in a particular role."
+      ]
+    },
+    {
+      "id": "conversation-001",
+      "category": "conversation",
+      "level": "B1",
+      "context": "school",
+      "skill": "conversation",
+      "question": "Friend: 'I haven't started the assignment yet.' Give friendly advice and mention that it is due tomorrow.",
+      "answer": "You should start soon. It's due tomorrow.",
+      "grammar": [
+        "modal verbs",
+        "present simple for schedules"
+      ],
+      "vocabulary": [
+        "assignment",
+        "due"
+      ],
+      "blankTargets": [
+        "should",
+        "due"
+      ],
+      "vocabularyNotes": [
+        "due = expected or required by a particular time; due tomorrow = must be handed in tomorrow.",
+        "due to = because of (different meaning and structure)."
+      ]
+    },
+    {
+      "id": "writing-001",
+      "category": "writing",
+      "level": "B2",
+      "context": "academic writing",
+      "skill": "writing",
+      "question": "Compare theoretical knowledge and practical experience. Use the pattern 'There is a significant difference between ... and ...'.",
+      "answer": "There is a significant difference between theoretical knowledge and practical experience.",
+      "grammar": [
+        "comparison"
+      ],
+      "writingPatterns": [
+        "comparison",
+        "difference between ... and ..."
+      ],
+      "vocabulary": [
+        "significant",
+        "theoretical",
+        "practical"
+      ],
+      "blankTargets": [
+        "significant difference",
+        "between",
+        "and"
+      ],
+      "grammarHint": "There is a + adjective + difference between X and Y.",
+      "vocabularyNotes": [
+        "significant = important or large enough to matter; a significant difference / significant impact."
+      ]
+    },
+    {
+      "id": "fill-blank-001",
+      "category": "fill-blank",
+      "level": "B1",
+      "context": "school",
+      "skill": "grammar",
+      "question": "Explain that someone submitted the report yesterday, using the passive voice.",
+      "answer": "The report was submitted yesterday.",
+      "grammar": [
+        "passive voice",
+        "past simple"
+      ],
+      "vocabulary": [
+        "submit",
+        "report"
+      ],
+      "blankTargets": [
+        "was submitted"
+      ],
+      "grammarHint": "Past simple passive: was/were + past participle.",
+      "vocabularyNotes": [
+        "submit = formally hand in work; submit an assignment / submit a report."
+      ]
+    }
+  ]
+}

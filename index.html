@@ -9,7 +9,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-<title>English Repetition</title>
+<title>English Repetition · v6</title>
 
 <link rel="manifest" href="./manifest.json">
 
@@ -684,6 +684,18 @@
 
         }
 
+        .topic-panel { margin: 20px 0; padding: 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-soft); }
+        .topic-panel select { max-width: 100%; display: block; margin: 8px 0 14px; }
+        .topic-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; margin: 12px 0; }
+        .topic-summary > div { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 10px; }
+        .topic-summary strong { display: block; font-size: 21px; }
+        .topic-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .topic-item:last-child { border: 0; }
+        .topic-item-header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+        .topic-meter { width: 100%; height: 7px; border-radius: 8px; background: var(--border); margin: 7px 0 4px; overflow: hidden; }
+        .topic-meter > span { display: block; height: 100%; background: var(--primary); }
+        .topic-small { color: var(--text-light); font-size: 13px; }
+        .topic-empty { padding: 12px; background: var(--surface); border-radius: 9px; }
     </style>
 </head>
 
@@ -1056,6 +1068,17 @@
 
         <div id="studyTimeStatistics" class="study-overview" aria-live="polite"></div>
 
+        <section class="topic-panel" aria-labelledby="topicPanelTitle">
+            <h3 id="topicPanelTitle">🧩 Learning by topic</h3>
+            <p class="study-note">Estimated performance from your answers, not a language-level test. A small sample is only an early signal. Card tags are broad: an incorrect answer does not prove which specific topic caused the error.</p>
+            <label for="topicTypeSelect">Show topic group</label>
+            <select id="topicTypeSelect" onchange="displayTopicStatistics()">
+                <option value="grammar">Grammar</option>
+                <option value="writing">Writing patterns & functions</option>
+                <option value="vocabulary">Vocabulary & phrases</option>
+            </select>
+            <div id="topicStatistics" aria-live="polite"></div>
+        </section>
         <p id="totalStatistics"></p>
 
         <div id="sentenceStatistics"></div>
@@ -1250,7 +1273,7 @@
 // APP VERSION
 // ======================================================
 
-const DATA_VERSION = 5;
+const DATA_VERSION = 6;
 const RECENT_LIMIT = 10;
 
 
@@ -1912,6 +1935,258 @@ window.addEventListener("pagehide", () => pauseStudyClock(true));
 setInterval(() => flushStudyClock(), STUDY_TICK_MS);
 
 // ======================================================
+// v6 TOPIC-BASED LEARNING — separate from card-level mastery
+// ======================================================
+// Historical observations are local per device. One observation per completed
+// exercise is applied to its declared tags (not to an inferred exact error).
+// A writing-function group is supplied explicitly or mapped from the published
+// writing pack's documented 10 x 10 ordering. Individual patterns stay distinct.
+const TOPIC_STATS_KEY = "englishRepetitionTopicStatsV1";
+const TOPIC_HISTORY_LIMIT = 12;
+const WRITING_FUNCTIONS = [
+    "Introducing a topic and thesis", "Expressing viewpoints and cautious claims",
+    "Explaining reasons and causes", "Describing effects and consequences",
+    "Comparing and contrasting", "Using examples and evidence",
+    "Describing data and trends", "Describing processes and methods",
+    "Problems, solutions and evaluation", "Linking ideas and drawing conclusions"
+];
+function canonicalTopic(value) {
+    return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+function tagValues(value) {
+    return (Array.isArray(value) ? value : typeof value === "string" ? [value] : [])
+        .filter(item => typeof item === "string" && item.trim())
+        .map(canonicalTopic);
+}
+function getWritingFunction(sentence) {
+    if (typeof sentence.writingFunction === "string" && sentence.writingFunction.trim())
+        return canonicalTopic(sentence.writingFunction);
+    // Only identify positions for OUR published writing pack, never arbitrary cards.
+    if (sentence.sourcePackId === "eren-b1b2-writing-patterns-100-v1") {
+        const match = /^curriculum-writing-(\d{3})$/.exec(sentence.sourceCardId || "");
+        if (match && Number(match[1]) >= 1 && Number(match[1]) <= 100)
+            return canonicalTopic(WRITING_FUNCTIONS[Math.floor((Number(match[1]) - 1) / 10)]);
+    }
+    return "";
+}
+function topicTags(sentence) {
+    const writing = [...tagValues(sentence.writingPatterns), ...tagValues(sentence.writingPattern)];
+    const writingFunction = getWritingFunction(sentence);
+    if (writingFunction) writing.push("function: " + writingFunction);
+    return {
+        grammar: [...new Set([...tagValues(sentence.grammar), ...tagValues(sentence.grammarTags)])].slice(0, 12),
+        vocabulary: [...new Set(tagValues(sentence.vocabulary))].slice(0, 12),
+        writing: [...new Set(writing)].slice(0, 12)
+    };
+}
+function emptyTopicStats() { return {grammar: {}, vocabulary: {}, writing: {}}; }
+function normalizeTopicStats(value) {
+    const clean = emptyTopicStats();
+    if (!value || typeof value !== "object") return clean;
+    for (const kind of Object.keys(clean)) {
+        const entries = value[kind];
+        if (!entries || typeof entries !== "object" || Array.isArray(entries)) continue;
+        for (const [rawTag, item] of Object.entries(entries).slice(0, 6000)) {
+            const tag = canonicalTopic(rawTag);
+            if (!tag || tag.length > 200 || !item || typeof item !== "object") continue;
+            const recent = Array.isArray(item.recent) ? item.recent
+                .filter(n => typeof n === "number" && Number.isFinite(n))
+                .slice(-TOPIC_HISTORY_LIMIT).map(n => clamp(n, 0, 1)) : [];
+            const attempts = Number.isSafeInteger(item.attempts) && item.attempts >= 0
+                ? item.attempts : recent.length;
+            const total = typeof item.total === "number" && Number.isFinite(item.total)
+                ? clamp(item.total, 0, attempts) : recent.reduce((a,b) => a+b, 0);
+            clean[kind][tag] = {
+                attempts, total, recent,
+                lastPracticed: typeof item.lastPracticed === "string" ? item.lastPracticed : null
+            };
+        }
+    }
+    return clean;
+}
+function loadTopicStats() {
+    try { return normalizeTopicStats(JSON.parse(localStorage.getItem(TOPIC_STATS_KEY) || "null")); }
+    catch (error) { console.warn("Could not read topic stats:", error); return emptyTopicStats(); }
+}
+let topicStats = loadTopicStats();
+function saveTopicStats() {
+    try { localStorage.setItem(TOPIC_STATS_KEY, JSON.stringify(topicStats)); }
+    catch (error) { console.warn("Could not save topic stats:", error); }
+}
+function topicAverage(item) {
+    if (!item || !item.attempts) return null;
+    const recent = item.recent.length ? item.recent : [item.total / item.attempts];
+    // Newer observations count slightly more, while preserving older evidence.
+    let numerator = 0, denominator = 0;
+    recent.forEach((score, index) => {
+        const weight = 1 + index / Math.max(1, recent.length - 1);
+        numerator += score * weight;
+        denominator += weight;
+    });
+    return numerator / denominator;
+}
+function recordTopicOutcome(sentence, quality) {
+    const tags = topicTags(sentence);
+    const now = new Date().toISOString();
+    for (const kind of Object.keys(tags)) {
+        for (const tag of tags[kind]) {
+            const item = topicStats[kind][tag] || {
+                attempts: 0, total: 0, recent: [], lastPracticed: null
+            };
+            item.attempts++;
+            item.total += clamp(quality, 0, 1);
+            item.recent.push(clamp(quality, 0, 1));
+            item.recent = item.recent.slice(-TOPIC_HISTORY_LIMIT);
+            item.lastPracticed = now;
+            topicStats[kind][tag] = item;
+        }
+    }
+    saveTopicStats();
+}
+function topicPriority(sentence) {
+    const tags = topicTags(sentence);
+    const families = ["grammar", "writing", "vocabulary"];
+    const factors = [];
+    for (const kind of families) {
+        const values = tags[kind].filter(t => !t.startsWith("function: "));
+        if (!values.length) continue;
+        const valuesToCheck = values.slice(0, kind === "grammar" ? 4 : 3);
+        let sum = 0;
+        for (const tag of valuesToCheck) {
+            const item = topicStats[kind][tag];
+            const avg = topicAverage(item);
+            // Weak topics return sooner; unseen topics get modest exposure.
+            // Strong topics stay eligible for maintenance reviews.
+            sum += avg === null ? 1.13 : clamp(1.48 - avg * 0.72, 0.78, 1.48);
+            if (!item || item.attempts < 2) sum += 0.08;
+        }
+        factors.push(sum / valuesToCheck.length);
+    }
+    const functionTag = tags.writing.find(t => t.startsWith("function: "));
+    if (functionTag) {
+        const avg = topicAverage(topicStats.writing[functionTag]);
+        factors.push(avg === null ? 1.12 : clamp(1.48 - avg * 0.72, 0.78, 1.48));
+    }
+    return factors.length ? clamp(factors.reduce((a,b)=>a+b,0) / factors.length, 0.7, 1.65) : 1;
+}
+function getTopicCoverage(kind) {
+    const result = new Map();
+    for (const sentence of sentences) {
+        for (const tag of topicTags(sentence)[kind]) result.set(tag, (result.get(tag) || 0) + 1);
+    }
+    return result;
+}
+function displayTopicStatistics() {
+    const root = document.getElementById("topicStatistics");
+    if (!root) return;
+    root.replaceChildren();
+    const kind = document.getElementById("topicTypeSelect").value;
+    if (!topicStats[kind]) return;
+    const coverage = getTopicCoverage(kind);
+    if (!coverage.size) {
+        const message = document.createElement("p");
+        message.className = "topic-empty";
+        message.textContent = "No tagged " + kind + " cards yet. Import a curriculum pack to begin.";
+        root.appendChild(message);
+        return;
+    }
+    const items = [...coverage].map(([tag, cards]) => {
+        const stat = topicStats[kind][tag];
+        return {tag, cards, attempts: stat ? stat.attempts : 0, avg: topicAverage(stat)};
+    });
+    const summary = document.createElement("div");
+    summary.className = "topic-summary";
+    for (const [label, value] of [
+        ["Topics in your cards", String(items.length)],
+        ["Practiced topics", String(items.filter(t => t.attempts > 0).length)],
+        ["Need more practice", String(items.filter(t => t.attempts >= 3 && t.avg < 0.6).length)]
+    ]) {
+        const metric = document.createElement("div");
+        const strong = document.createElement("strong");
+        const caption = document.createElement("span");
+        strong.textContent = value; caption.textContent = label;
+        metric.append(strong, caption); summary.appendChild(metric);
+    }
+    root.appendChild(summary);
+    // Make weak AND under-practiced topics discoverable. No false 0% for unseen tags.
+    items.sort((a,b) => {
+        const pa = a.attempts >= 3 && a.avg < 0.65 ? 0 : a.attempts < 3 ? 1 : 2;
+        const pb = b.attempts >= 3 && b.avg < 0.65 ? 0 : b.attempts < 3 ? 1 : 2;
+        return pa - pb || (a.avg ?? 1) - (b.avg ?? 1) || a.attempts - b.attempts || a.tag.localeCompare(b.tag);
+    });
+    const intro = document.createElement("p");
+    intro.className = "topic-small";
+    intro.textContent = "Showing up to 24 topics needing attention. Tap a different group above. " +
+        "Percentages describe recent exercise quality, not verified language proficiency.";
+    root.appendChild(intro);
+    for (const item of items.slice(0, 24)) {
+        const row = document.createElement("div");
+        row.className = "topic-item";
+        const heading = document.createElement("div");
+        heading.className = "topic-item-header";
+        const name = document.createElement("strong");
+        name.textContent = item.tag.startsWith("function: ")
+            ? "Writing function · " + item.tag.slice(10) : item.tag;
+        const value = document.createElement("span");
+        value.textContent = item.avg === null ? "Not practiced" : Math.round(item.avg * 100) + "%";
+        heading.append(name, value); row.appendChild(heading);
+        if (item.avg !== null) {
+            const meter = document.createElement("div");
+            meter.className = "topic-meter";
+            const filled = document.createElement("span");
+            filled.style.width = Math.round(item.avg * 100) + "%";
+            meter.appendChild(filled); row.appendChild(meter);
+        }
+        const detail = document.createElement("div");
+        detail.className = "topic-small";
+        detail.textContent = item.cards + " card(s) · " + item.attempts + " exercise(s)" +
+            (item.attempts > 0 && item.attempts < 3 ? " · early signal" : "");
+        row.appendChild(detail); root.appendChild(row);
+    }
+}
+// Recent picks are session-only: no hard rule blocks an eligible card.
+const recentReviewIds = [];
+const recentReviewTopicGroups = [];
+function noteReviewPick(sentence) {
+    recentReviewIds.push(sentence.id);
+    if (recentReviewIds.length > 8) recentReviewIds.shift();
+    const primary = topicTags(sentence).grammar[0] || sentence.category || "";
+    recentReviewTopicGroups.push(primary);
+    if (recentReviewTopicGroups.length > 6) recentReviewTopicGroups.shift();
+}
+function selectWeightedIndex(indexes, mode, excludeIndex = -1) {
+    if (!indexes.length) return -1;
+    const options = indexes.length > 1 && indexes.includes(excludeIndex)
+        ? indexes.filter(index => index !== excludeIndex) : indexes;
+    const recentIds = mode === "review" ? recentReviewIds : recentBlankCardIds;
+    const recentGroups = mode === "review" ? recentReviewTopicGroups : recentBlankTags;
+    const weights = options.map(index => {
+        const sentence = sentences[index];
+        let w = (1 + (100 - getEffectiveMastery(sentence)) / 22) * topicPriority(sentence);
+        if (mode === "blank" && isDue(sentence)) w *= 1.25;
+        if (mode === "review" && sentence.nextReview) {
+            const days = Math.max(0, (Date.now() - new Date(sentence.nextReview).getTime()) / 86400000);
+            if (Number.isFinite(days)) w *= 1 + Math.min(days, 20) * 0.025;
+        }
+        const lastIndex = recentIds.lastIndexOf(sentence.id);
+        if (lastIndex !== -1 && options.length > 1)
+            w *= lastIndex >= recentIds.length - 2 ? 0.12 : 0.55;
+        const tags = topicTags(sentence);
+        const primary = tags.grammar[0] || sentence.category || "";
+        if (primary && recentGroups.slice(-2).includes(primary) && options.length > 2) w *= 0.60;
+        // Older untouched cards get modest rotation, even if they are familiar.
+        if (!sentence.reviewCount && sentence.masteryScore <= 20) w *= 1.09;
+        return Math.max(0.02, w);
+    });
+    let roll = Math.random() * weights.reduce((total,n) => total+n, 0);
+    for (let i = 0; i < options.length; i++) {
+        roll -= weights[i];
+        if (roll < 0) return options[i];
+    }
+    return options[options.length - 1];
+}
+
+// ======================================================
 // RECENT PERFORMANCE
 // ======================================================
 
@@ -2371,6 +2646,7 @@ function showStatisticsMode() {
 
     displayStudyStatistics();
     displayStatistics();
+    displayTopicStatistics();
 }
 
 
@@ -2518,50 +2794,10 @@ function refreshTodayReviewDisplay() {
 // FIND RANDOM DUE
 // ======================================================
 
-function findRandomDueSentence() {
-
-    let dueIndexes =
-        [];
-
-
-    for (
-        let i = 0;
-        i < sentences.length;
-        i++
-    ) {
-
-        if (
-            isDue(
-                sentences[i]
-            )
-        ) {
-
-            dueIndexes.push(
-                i
-            );
-        }
-    }
-
-
-    if (
-        dueIndexes.length === 0
-    ) {
-
-        return -1;
-    }
-
-
-    return (
-
-        dueIndexes[
-
-            Math.floor(
-
-                Math.random() *
-                dueIndexes.length
-            )
-        ]
-    );
+function findRandomDueSentence(excludeIndex = -1) {
+    const due = sentences.map((sentence, index) => isDue(sentence) ? index : -1)
+        .filter(index => index >= 0);
+    return selectWeightedIndex(due, "review", excludeIndex);
 }
 
 
@@ -2590,6 +2826,7 @@ function displayCurrentReview() {
         sentence.id;
 
     beginStudyExercise("review");
+    noteReviewPick(sentence);
 
     const reviewInstruction = document.getElementById("reviewInstruction");
     reviewInstruction.textContent = sentence.category === "daily" || !sentence.category
@@ -2779,48 +3016,12 @@ function nextSentence() {
     }
 
 
-    let oldIndex =
-        currentSentence;
-
-
-    let newIndex =
-
-        findRandomDueSentence();
-
-
-    if (
-        newIndex === -1
-    ) {
-
+    const newIndex = findRandomDueSentence(currentSentence);
+    if (newIndex === -1) {
         showReviewFinished();
-
         refreshTodayReviewDisplay();
-
         return;
     }
-
-
-    if (
-        countDueReviews() > 1
-    ) {
-
-        let tries = 0;
-
-
-        while (
-            newIndex === oldIndex &&
-            tries < 20
-        ) {
-
-            newIndex =
-
-                findRandomDueSentence();
-
-
-            tries++;
-        }
-    }
-
 
     currentSentence =
         newIndex;
@@ -2881,6 +3082,8 @@ function again() {
         -8
     );
 
+
+    recordTopicOutcome(sentence, 0);
 
     saveData();
 
@@ -3105,6 +3308,9 @@ function finishSuccessfulReview(
     );
 
 
+    recordTopicOutcome(sentence, resultType === "reviewHard" ? 0.4 :
+        resultType === "reviewGood" ? 0.8 : 1);
+
     saveData();
 
     refreshTodayReviewDisplay();
@@ -3313,30 +3519,8 @@ function getLearningTags(sentence) {
         .map(value => value.trim().toLowerCase()))];
 }
 
-function chooseAdaptiveSentence() {
-    if (!sentences.length) return 0;
-    const weights = sentences.map(sentence => {
-        const mastery = getEffectiveMastery(sentence);
-        let weight = 1 + (100 - mastery) / 13;
-        // Older due sentences get an extra opportunity without hiding new cards.
-        if (isDue(sentence)) weight *= 1.25;
-        const recentlySeen = recentBlankCardIds.lastIndexOf(sentence.id);
-        if (sentences.length > 1 && recentlySeen >= 0) {
-            weight *= recentlySeen === recentBlankCardIds.length - 1 ? 0.03 : 0.28;
-        }
-        const tags = getLearningTags(sentence);
-        if (tags.length) {
-            const repeated = recentBlankTags.filter(tag => tags.includes(tag)).length;
-            weight *= Math.max(0.45, 1 - repeated * 0.13);
-        }
-        return Math.max(0.01, weight);
-    });
-    let pick = Math.random() * weights.reduce((sum, weight) => sum + weight, 0);
-    for (let i = 0; i < weights.length; i++) {
-        pick -= weights[i];
-        if (pick < 0) return i;
-    }
-    return weights.length - 1;
+function chooseAdaptiveSentence(excludeIndex = -1) {
+    return selectWeightedIndex(sentences.map((_, index) => index), "blank", excludeIndex);
 }
 
 // ======================================================
@@ -3940,6 +4124,13 @@ function checkBlank() {
         }
 
 
+        // One topic observation per finished exercise. A wrong attempt and hints
+        // reduce credit even when the final model answer is completed.
+        const quality = blankHadWrongAttempt ? 0.2 :
+            blankHintLevel === 0 ? 1 : blankHintLevel === 1 ? 0.72 :
+            blankHintLevel === 2 ? 0.48 : 0.28;
+        recordTopicOutcome(sentence, quality);
+
         correctScore++;
 
 
@@ -4078,6 +4269,7 @@ function showBlankAnswer() {
     blankFinished =
         true;
 
+    recordTopicOutcome(sentence, 0);
     completeStudyExercise("blankRevealed");
     document.getElementById("blankListenButton").style.display = "inline-block";
     revealBlankModelAnswer(sentence);
@@ -4154,37 +4346,10 @@ function nextBlankSentence() {
     }
 
 
-    let oldIndex =
-        currentSentence;
-
-
-    let newIndex =
-
-        chooseAdaptiveSentence();
-
-
-    if (
-        sentences.length > 1
-    ) {
-
-        let tries =
-            0;
-
-
-        while (
-            newIndex === oldIndex &&
-            tries < 20
-        ) {
-
-            newIndex =
-
-                chooseAdaptiveSentence();
-
-
-            tries++;
-        }
-    }
-
+    // An abandoned blank question after a wrong attempt still records that weak signal.
+    if (!blankFinished && wrongCountedForCurrentQuestion && currentSentenceId)
+        recordTopicOutcome(sentences[currentSentence], 0);
+    const newIndex = chooseAdaptiveSentence(currentSentence);
 
     currentSentence =
         newIndex;
@@ -5744,7 +5909,7 @@ function validateCardPack(raw) {
                 sourcePackId: packId,
                 ...(cardId ? {sourceCardId: cardId, importKey: packId + ":" + cardId} : {})
             };
-            for (const field of ["category", "level", "context", "skill", "grammarHint"]) {
+            for (const field of ["category", "level", "context", "skill", "grammarHint", "writingFunction"]) {
                 const value = optionalCardString(rawCard[field], field, field === "grammarHint" ? 800 : 120);
                 if (value !== undefined) newCard[field] = value;
             }
@@ -5916,7 +6081,10 @@ function exportBackup() {
             sentences,
 
         studyStats:
-            studyStats
+            studyStats,
+
+        topicStats:
+            topicStats
     };
 
 
@@ -6292,6 +6460,15 @@ function importBackup(
                     studyStats = normalizeStudyStats(backup.studyStats);
                     saveStudyStats();
                 }
+
+                // Old backups contain no topic history; do not invent past results.
+                topicStats = backup.topicStats && typeof backup.topicStats === "object"
+                    ? normalizeTopicStats(backup.topicStats) : emptyTopicStats();
+                saveTopicStats();
+                recentReviewIds.length = 0;
+                recentReviewTopicGroups.length = 0;
+                recentBlankCardIds.length = 0;
+                recentBlankTags.length = 0;
 
                 currentSentence =
                     0;

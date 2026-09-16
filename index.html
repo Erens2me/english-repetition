@@ -526,6 +526,20 @@
         }
 
 
+
+        /* v7: Search-only, paginated per-card statistics. Never draw all cards. */
+        .sentence-stats-search { margin-top: 20px; padding: 16px; background: var(--surface-soft);
+            border: 1px solid var(--border); border-radius: 12px; }
+        .sentence-stats-search label { display:block; font-weight:700; margin-bottom:8px; }
+        .sentence-stats-search-controls { display:flex; flex-wrap:wrap; gap:8px; }
+        #sentenceStatsSearchInput { flex: 1 1 230px; min-width:0; }
+        .sentence-stats-pager { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:12px 0; }
+        .sentence-stats-pager button { background:#e9edf4; color:var(--text); }
+        .sentence-stats-pager button:disabled { cursor:default; opacity:.45; }
+        #sentenceStatsSearchStatus { color:var(--text-light); font-size:14px; margin:10px 0 0; }
+        #sentenceStatistics { margin-top:12px; }
+        #sentenceStatistics strong, #sentenceStatistics p { overflow-wrap:anywhere; }
+
         /* ==================================================
            PRIVATE STUDY STATISTICS (STATISTICS VIEW ONLY)
            ================================================== */
@@ -1081,7 +1095,24 @@
         </section>
         <p id="totalStatistics"></p>
 
-        <div id="sentenceStatistics"></div>
+        <section class="sentence-stats-search" aria-labelledby="sentenceStatsTitle">
+            <h3 id="sentenceStatsTitle">🔎 Individual card statistics</h3>
+            <p class="study-note">Individual cards stay hidden until you search. Search in Turkish, English, grammar, vocabulary, writing patterns or card ID. Only 20 results are displayed at a time.</p>
+            <label for="sentenceStatsSearchInput">Find a card or a topic</label>
+            <div class="sentence-stats-search-controls">
+                <input id="sentenceStatsSearchInput" type="search" autocomplete="off"
+                    placeholder="e.g. wish, despite, karşılaştırma…"
+                    oninput="queueSentenceStatisticsSearch()">
+                <button class="secondary-button" type="button" onclick="clearSentenceStatisticsSearch()">Clear</button>
+            </div>
+            <p id="sentenceStatsSearchStatus" role="status" aria-live="polite">Enter at least 2 characters to find a card.</p>
+            <div id="sentenceStatistics"></div>
+            <div id="sentenceStatsPager" class="sentence-stats-pager" style="display:none;">
+                <button id="sentenceStatsPrevious" type="button" onclick="changeSentenceStatisticsPage(-1)">← Previous</button>
+                <span id="sentenceStatsPageLabel" aria-live="polite"></span>
+                <button id="sentenceStatsNext" type="button" onclick="changeSentenceStatisticsPage(1)">Next →</button>
+            </div>
+        </section>
 
     </section>
 
@@ -1273,7 +1304,7 @@
 // APP VERSION
 // ======================================================
 
-const DATA_VERSION = 6;
+const DATA_VERSION = 7;
 const RECENT_LIMIT = 10;
 
 
@@ -5394,309 +5425,174 @@ function recentResultLabel(
 // STATISTICS
 // ======================================================
 
-function displayStatistics() {
-
-    let totalCorrect =
-        0;
-
-    let totalWrong =
-        0;
-
-    let totalShown =
-        0;
-
-    let totalMastery =
-        0;
-
-    let totalEffectiveMastery =
-        0;
-
-
-    let container =
-
-        document.getElementById(
-            "sentenceStatistics"
-        );
-
-
-    container.innerHTML =
-        "";
-
-
-    for (
-        let sentence of sentences
-    ) {
-
-        let attempts =
-
-            sentence.correctCount +
-            sentence.wrongCount;
-
-
-        let accuracy =
-
-            attempts > 0
-
-                ? Math.round(
-
-                    (
-                        sentence.correctCount /
-                        attempts
-                    ) * 100
-                )
-
-                : 0;
-
-
-        let recentAdjustment =
-
-            getRecentAdjustment(
-                sentence
-            );
-
-
-        let effectiveMastery =
-
-            getEffectiveMastery(
-                sentence
-            );
-
-
-        let fullChance =
-
-            Math.round(
-
-                getFullChallengeChance(
-                    sentence
-                ) * 100
-            );
-
-
-        let recentText =
-
-            sentence.recentResults.length >
-            0
-
-                ?
-
-                    sentence.recentResults
-
-                        .map(
-
-                            item =>
-
-                                recentResultLabel(
-                                    item.type
-                                )
-                        )
-
-                        .join(
-                            " → "
-                        )
-
-                :
-
-                    "No recent history yet";
-
-
-        totalCorrect +=
-            sentence.correctCount;
-
-
-        totalWrong +=
-            sentence.wrongCount;
-
-
-        totalShown +=
-            sentence.shownCount;
-
-
-        totalMastery +=
-            sentence.masteryScore;
-
-
-        totalEffectiveMastery +=
-            effectiveMastery;
-
-
-        let section =
-
-            document.createElement(
-                "div"
-            );
-
-
-        let title =
-
-            document.createElement(
-                "strong"
-            );
-
-
-        title.textContent =
-            sentence.answer;
-
-
-        section.appendChild(
-            title
-        );
-
-
-        let details =
-
-            document.createElement(
-                "p"
-            );
-
-
-        details.innerHTML =
-
-            "Correct: " +
-            sentence.correctCount +
-            "<br>" +
-
-            "Wrong: " +
-            sentence.wrongCount +
-            "<br>" +
-
-            "Shown: " +
-            sentence.shownCount +
-            "<br>" +
-
-            "Accuracy: " +
-            accuracy +
-            "%<br><br>" +
-
-            "<strong>Long-term Mastery: " +
-            sentence.masteryScore +
-            "%</strong><br>" +
-
-            "Recent adjustment: " +
-            (
-                recentAdjustment > 0
-                    ? "+"
-                    : ""
-            ) +
-            recentAdjustment +
-            "<br>" +
-
-            "<strong>Current Mastery: " +
-            effectiveMastery +
-            "%</strong><br>" +
-
-            "Level: " +
-            getMasteryLevelFromScore(
-                effectiveMastery
-            ) +
-            "<br>" +
-
-            "Full Challenge chance: " +
-            fullChance +
-            "%<br><br>" +
-
-            "Recent results: " +
-            recentText +
-            "<br>" +
-
-            "Review interval: " +
-            sentence.interval +
-            " day(s)<br>" +
-
-            "Total reviews: " +
-            sentence.reviewCount;
-
-
-        section.appendChild(
-            details
-        );
-
-
-        container.appendChild(
-            section
-        );
+// Only aggregate statistics are computed when Statistics opens. Card details
+// are generated on demand after a search and capped to one 20-card page.
+const SENTENCE_STATS_PAGE_SIZE = 20;
+let sentenceStatsSearchMatches = [];
+let sentenceStatsSearchPage = 0;
+let sentenceStatsSearchTimer = null;
+
+function normalizedStatsSearch(value) {
+    // Accent-insensitive: "karşılaştırma" matches "karsilastirma".
+    return String(value || "").toLocaleLowerCase("tr")
+        .replace(/ı/g, "i")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .trim();
+}
+
+function sentenceStatsSearchText(sentence) {
+    const strings = [sentence.question, sentence.answer, sentence.category,
+        sentence.sourceCardId, sentence.sourcePackId, sentence.writingFunction];
+    for (const field of ["grammar", "grammarTags", "vocabulary",
+        "writingPattern", "writingPatterns"]) {
+        const value = sentence[field];
+        if (Array.isArray(value)) strings.push(...value);
+        else if (typeof value === "string") strings.push(value);
     }
+    return normalizedStatsSearch(strings.filter(v => typeof v === "string").join(" "));
+}
 
+function queueSentenceStatisticsSearch() {
+    if (sentenceStatsSearchTimer !== null) clearTimeout(sentenceStatsSearchTimer);
+    sentenceStatsSearchTimer = null;
+    const input = document.getElementById("sentenceStatsSearchInput");
+    const query = normalizedStatsSearch(input.value);
+    if (query.length < 2) {
+        sentenceStatsSearchMatches = [];
+        sentenceStatsSearchPage = 0;
+        renderSentenceStatisticsSearch();
+        return;
+    }
+    const status = document.getElementById("sentenceStatsSearchStatus");
+    status.textContent = "Searching…";
+    // Debouncing keeps repeated keystrokes from triggering a full card scan.
+    sentenceStatsSearchTimer = setTimeout(() => {
+        sentenceStatsSearchTimer = null;
+        runSentenceStatisticsSearch();
+    }, 180);
+}
 
-    let totalAttempts =
+function runSentenceStatisticsSearch() {
+    const input = document.getElementById("sentenceStatsSearchInput");
+    const query = normalizedStatsSearch(input.value);
+    sentenceStatsSearchMatches = [];
+    sentenceStatsSearchPage = 0;
+    if (query.length >= 2) {
+        // Search the data once; NEVER append every card to the DOM.
+        for (let index = 0; index < sentences.length; index++) {
+            if (sentenceStatsSearchText(sentences[index]).includes(query)) {
+                sentenceStatsSearchMatches.push(index);
+            }
+        }
+    }
+    renderSentenceStatisticsSearch();
+}
 
-        totalCorrect +
-        totalWrong;
+function clearSentenceStatisticsSearch() {
+    const input = document.getElementById("sentenceStatsSearchInput");
+    input.value = "";
+    queueSentenceStatisticsSearch();
+    input.focus();
+}
 
+function changeSentenceStatisticsPage(direction) {
+    const pages = Math.ceil(sentenceStatsSearchMatches.length / SENTENCE_STATS_PAGE_SIZE);
+    const nextPage = sentenceStatsSearchPage + direction;
+    if (nextPage < 0 || nextPage >= pages) return;
+    sentenceStatsSearchPage = nextPage;
+    renderSentenceStatisticsSearch();
+    document.getElementById("sentenceStatsTitle").scrollIntoView({block:"start", behavior:"auto"});
+}
 
-    let totalAccuracy =
+function renderSentenceStatisticsSearch() {
+    const container = document.getElementById("sentenceStatistics");
+    const status = document.getElementById("sentenceStatsSearchStatus");
+    const pager = document.getElementById("sentenceStatsPager");
+    container.replaceChildren();
+    const query = normalizedStatsSearch(document.getElementById("sentenceStatsSearchInput").value);
+    if (query.length < 2) {
+        status.textContent = "Enter at least 2 characters to find a card.";
+        pager.style.display = "none";
+        return;
+    }
+    const found = sentenceStatsSearchMatches.length;
+    if (!found) {
+        status.textContent = "No matching cards found. Try another word or grammar tag.";
+        pager.style.display = "none";
+        return;
+    }
+    const pages = Math.ceil(found / SENTENCE_STATS_PAGE_SIZE);
+    sentenceStatsSearchPage = Math.min(sentenceStatsSearchPage, pages - 1);
+    const first = sentenceStatsSearchPage * SENTENCE_STATS_PAGE_SIZE;
+    const last = Math.min(first + SENTENCE_STATS_PAGE_SIZE, found);
+    status.textContent = found + " matching card(s) · showing " + (first + 1) + "–" + last + ".";
+    const fragment = document.createDocumentFragment();
+    for (const index of sentenceStatsSearchMatches.slice(first, last)) {
+        const sentence = sentences[index];
+        const attempts = sentence.correctCount + sentence.wrongCount;
+        const accuracy = attempts ? Math.round(sentence.correctCount / attempts * 100) + "%" : "Not practiced";
+        const mastery = getEffectiveMastery(sentence);
+        const section = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = sentence.answer;
+        const question = document.createElement("p");
+        question.textContent = sentence.question;
+        const details = document.createElement("p");
+        const recent = Array.isArray(sentence.recentResults) && sentence.recentResults.length
+            ? sentence.recentResults.map(item => recentResultLabel(item.type)).join(" → ")
+            : "No recent history yet";
+        // Numeric values and the known result-label mapping are safe here;
+        // all user-authored content is inserted using textContent.
+        details.textContent = "Correct: " + sentence.correctCount +
+            " · Wrong: " + sentence.wrongCount + " · Shown: " + sentence.shownCount +
+            " | Accuracy: " + accuracy +
+            " | Long-term mastery: " + sentence.masteryScore + "%" +
+            " | Current mastery: " + mastery + "%" +
+            " | Level: " + getMasteryLevelFromScore(mastery) +
+            " | Full challenge: " + Math.round(getFullChallengeChance(sentence) * 100) + "%" +
+            " | Interval: " + sentence.interval + " day(s)" +
+            " | Reviews: " + sentence.reviewCount +
+            " | Recent: " + recent;
+        details.className = "study-note";
+        section.append(title, question, details);
+        fragment.appendChild(section);
+    }
+    container.appendChild(fragment);
+    pager.style.display = pages > 1 ? "flex" : "none";
+    document.getElementById("sentenceStatsPrevious").disabled = sentenceStatsSearchPage === 0;
+    document.getElementById("sentenceStatsNext").disabled = sentenceStatsSearchPage === pages - 1;
+    document.getElementById("sentenceStatsPageLabel").textContent =
+        "Page " + (sentenceStatsSearchPage + 1) + " of " + pages;
+}
 
-        totalAttempts > 0
-
-            ? Math.round(
-
-                (
-                    totalCorrect /
-                    totalAttempts
-                ) * 100
-            )
-
-            : 0;
-
-
-    let averageMastery =
-
-        sentences.length > 0
-
-            ? Math.round(
-
-                totalMastery /
-                sentences.length
-            )
-
-            : 0;
-
-
-    let averageCurrent =
-
-        sentences.length > 0
-
-            ? Math.round(
-
-                totalEffectiveMastery /
-                sentences.length
-            )
-
-            : 0;
-
-
-    document.getElementById(
-        "totalStatistics"
-    ).innerHTML =
-
+function displayStatistics() {
+    let totalCorrect = 0, totalWrong = 0, totalShown = 0;
+    let totalMastery = 0, totalEffectiveMastery = 0;
+    let practicedCards = 0, dueCards = 0;
+    for (const sentence of sentences) {
+        totalCorrect += sentence.correctCount;
+        totalWrong += sentence.wrongCount;
+        totalShown += sentence.shownCount;
+        totalMastery += sentence.masteryScore;
+        totalEffectiveMastery += getEffectiveMastery(sentence);
+        if (sentence.reviewCount || sentence.correctCount || sentence.wrongCount || sentence.shownCount) practicedCards++;
+        if (isDue(sentence)) dueCards++;
+    }
+    const attempts = totalCorrect + totalWrong;
+    const accuracy = attempts ? Math.round(totalCorrect / attempts * 100) : 0;
+    const avgMastery = sentences.length ? Math.round(totalMastery / sentences.length) : 0;
+    const avgCurrent = sentences.length ? Math.round(totalEffectiveMastery / sentences.length) : 0;
+    document.getElementById("totalStatistics").innerHTML =
         "<strong>Overall Statistics</strong><br><br>" +
-
-        "Total sentences: " +
-        sentences.length +
-        "<br>" +
-
-        "Correct: " +
-        totalCorrect +
-        "<br>" +
-
-        "Wrong: " +
-        totalWrong +
-        "<br>" +
-
-        "Shown: " +
-        totalShown +
-        "<br>" +
-
-        "Accuracy: " +
-        totalAccuracy +
-        "%<br>" +
-
-        "Average long-term mastery: " +
-        averageMastery +
-        "%<br>" +
-
-        "Average current mastery: " +
-        averageCurrent +
-        "%";
+        "Total cards: " + sentences.length + "<br>" +
+        "Cards practiced: " + practicedCards + "<br>" +
+        "Due for review: " + dueCards + "<br>" +
+        "Correct: " + totalCorrect + "<br>Wrong: " + totalWrong +
+        "<br>Shown: " + totalShown + "<br>Accuracy: " + accuracy +
+        "%<br>Average long-term mastery: " + avgMastery +
+        "%<br>Average current mastery: " + avgCurrent + "%";
+    // No per-card rendering until the user supplies a search term.
+    queueSentenceStatisticsSearch();
 }
 
 

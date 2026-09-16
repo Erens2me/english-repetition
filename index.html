@@ -540,6 +540,27 @@
         #sentenceStatistics { margin-top:12px; }
         #sentenceStatistics strong, #sentenceStatistics p { overflow-wrap:anywhere; }
 
+
+        /* v8: Lightweight study filters, shared by Review and Fill Blank. */
+        .study-filter-panel { margin: 0 0 22px; padding: 15px; border: 1px solid var(--border);
+            border-radius: 12px; background: var(--surface-soft); }
+        .study-filter-panel h3 { margin: 0 0 5px; font-size: 18px; }
+        .study-filter-panel p { margin: 5px 0 10px; }
+        .study-filter-categories { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+        .study-filter-chip { min-height: 40px; padding: 8px 11px; border: 1px solid var(--border);
+            color: var(--text); background: white; border-radius: 999px; font-size: 13px; font-weight: 600; }
+        .study-filter-chip[aria-pressed="true"] { background: #e5ebff; border-color: var(--primary);
+            color: var(--primary-dark); }
+        .study-filter-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .study-filter-field { display:flex; flex-direction:column; gap:5px; min-width:0; }
+        .study-filter-field label { font-weight:600; font-size:13px; }
+        .study-filter-field select, .study-filter-field input { width:100%; min-width:0; }
+        .study-filter-options { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+        .study-filter-options label { display:flex; align-items:center; gap:7px; font-size:14px; }
+        .study-filter-options input[type="checkbox"] { min-height:auto; width:18px; height:18px; }
+        .study-filter-status { color:var(--text-light); font-size:13px; overflow-wrap:anywhere; }
+        @media (max-width: 520px) { .study-filter-grid { grid-template-columns:1fr; } }
+
         /* ==================================================
            PRIVATE STUDY STATISTICS (STATISTICS VIEW ONLY)
            ================================================== */
@@ -836,6 +857,49 @@
         class="card"
     >
 
+        <section class="study-filter-panel" aria-labelledby="reviewFilterTitle">
+            <h3 id="reviewFilterTitle">🎯 Choose what to practice</h3>
+            <p class="study-note">All / Mixed combines everything. Tap one category, then add others to mix them.
+                Your selection applies to both Review and Fill Blank.</p>
+            <div id="reviewCategoryChips" class="study-filter-categories" role="group" aria-label="Choose categories"></div>
+            <div class="study-filter-grid">
+                <div class="study-filter-field">
+                    <label for="reviewFocusKind">Focus on a topic (optional)</label>
+                    <select id="reviewFocusKind" onchange="setStudyFocusKind(this.value)">
+                        <option value="none">All topics — mixed</option>
+                        <option value="grammar">Specific grammar</option>
+                        <option value="vocabulary">Specific word / phrase</option>
+                        <option value="writing">Specific writing pattern</option>
+                    </select>
+                </div>
+                <div class="study-filter-field">
+                    <label for="reviewLevel">Level</label>
+                    <select id="reviewLevel" onchange="setStudyLevel(this.value)">
+                        <option value="all">B1 + B2 (all)</option><option value="b1">B1 only</option>
+                        <option value="b2">B2 only</option><option value="other">Other / untagged</option>
+                    </select>
+                </div>
+                <div class="study-filter-field">
+                    <label for="reviewTopicSearch">Find a topic</label>
+                    <input id="reviewTopicSearch" type="search" autocomplete="off" placeholder="Type to filter topics…"
+                        oninput="setStudyTopicSearch(this.value)" disabled>
+                </div>
+                <div class="study-filter-field">
+                    <label for="reviewFocusTopic">Select the exact topic</label>
+                    <select id="reviewFocusTopic" onchange="setStudyFocusTopic(this.value)" disabled>
+                        <option value="">All topics</option>
+                    </select>
+                </div>
+            </div>
+            <div class="study-filter-options">
+                <label for="reviewIncludeAll"><input id="reviewIncludeAll" type="checkbox" onchange="setReviewIncludeAll(this.checked)">
+                    Include not-due cards (focused practice)</label>
+            </div>
+            <div class="study-filter-options"><button type="button" class="secondary-button"
+                onclick="resetStudyFilters()">↺ Reset filters</button></div>
+            <p id="reviewFilterStatus" class="study-filter-status" role="status" aria-live="polite"></p>
+        </section>
+
         <div id="reviewInstruction" class="exercise-label">
             Translate this sentence into English
         </div>
@@ -955,6 +1019,47 @@
     >
 
         <h2>✍️ Practice</h2>
+        <section class="study-filter-panel" aria-labelledby="blankFilterTitle">
+            <h3 id="blankFilterTitle">🎯 Choose what to practice</h3>
+            <p class="study-note">All / Mixed combines everything. Tap one category, then add others to mix them.
+                Your selection applies to both Review and Fill Blank.</p>
+            <div id="blankCategoryChips" class="study-filter-categories" role="group" aria-label="Choose categories"></div>
+            <div class="study-filter-grid">
+                <div class="study-filter-field">
+                    <label for="blankFocusKind">Focus on a topic (optional)</label>
+                    <select id="blankFocusKind" onchange="setStudyFocusKind(this.value)">
+                        <option value="none">All topics — mixed</option>
+                        <option value="grammar">Specific grammar</option>
+                        <option value="vocabulary">Specific word / phrase</option>
+                        <option value="writing">Specific writing pattern</option>
+                    </select>
+                </div>
+                <div class="study-filter-field">
+                    <label for="blankLevel">Level</label>
+                    <select id="blankLevel" onchange="setStudyLevel(this.value)">
+                        <option value="all">B1 + B2 (all)</option><option value="b1">B1 only</option>
+                        <option value="b2">B2 only</option><option value="other">Other / untagged</option>
+                    </select>
+                </div>
+                <div class="study-filter-field">
+                    <label for="blankTopicSearch">Find a topic</label>
+                    <input id="blankTopicSearch" type="search" autocomplete="off" placeholder="Type to filter topics…"
+                        oninput="setStudyTopicSearch(this.value)" disabled>
+                </div>
+                <div class="study-filter-field">
+                    <label for="blankFocusTopic">Select the exact topic</label>
+                    <select id="blankFocusTopic" onchange="setStudyFocusTopic(this.value)" disabled>
+                        <option value="">All topics</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="study-filter-options"><button type="button" class="secondary-button"
+                onclick="resetStudyFilters()">↺ Reset filters</button></div>
+            <p id="blankFilterStatus" class="study-filter-status" role="status" aria-live="polite"></p>
+        </section>
+
+
         <p class="exercise-label">Fill the missing English words. As you improve, more words will be hidden.</p>
 
 
@@ -1304,7 +1409,7 @@
 // APP VERSION
 // ======================================================
 
-const DATA_VERSION = 7;
+const DATA_VERSION = 8;
 const RECENT_LIMIT = 10;
 
 
@@ -2518,6 +2623,206 @@ function shouldUseFullChallenge(
 }
 
 
+
+// ======================================================
+// V8 STUDY FILTERS (shared by Review and Fill Blank)
+// Nothing here modifies saved cards, review dates, or topic performance.
+// ======================================================
+const STUDY_CATEGORY_LABELS = {
+    daily: "Daily English", situation: "Situations", grammar: "Grammar",
+    vocabulary: "Vocabulary", phrases: "Phrases & phrasal verbs",
+    conversation: "Conversation", writing: "Writing",
+    "advanced-blank": "Advanced Fill Blank", uncategorized: "My cards"
+};
+const STUDY_CATEGORY_ORDER = ["daily", "situation", "grammar", "vocabulary",
+    "phrases", "conversation", "writing", "advanced-blank", "uncategorized"];
+const STUDY_TOPIC_OPTION_LIMIT = 85;
+const studyFilters = {
+    // Empty Set means ALL categories. Named category filters are an OR/union.
+    categories: new Set(), kind: "none", topic: "", search: "", level: "all",
+    reviewIncludeAll: false
+};
+
+function studyCategoryOf(sentence) {
+    return typeof sentence.category === "string" && sentence.category.trim()
+        ? sentence.category.trim().toLowerCase() : "uncategorized";
+}
+function isPhraseCard(sentence) {
+    // "Phrases" is a VIRTUAL group; the existing 700-pack needs no changes.
+    // It includes multiword vocabulary and cards explicitly tagged phrasal verbs.
+    const vocab = topicTags(sentence).vocabulary;
+    return vocab.some(value => /\s/.test(value)) ||
+        topicTags(sentence).grammar.includes("phrasal verbs");
+}
+function availableStudyCategories() {
+    const present = new Set(sentences.map(studyCategoryOf));
+    if (sentences.some(isPhraseCard)) present.add("phrases");
+    return [...present].sort((a, b) => {
+        const ai = STUDY_CATEGORY_ORDER.indexOf(a), bi = STUDY_CATEGORY_ORDER.indexOf(b);
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi) || a.localeCompare(b);
+    });
+}
+function matchesStudyCategory(sentence) {
+    if (!studyFilters.categories.size) return true;
+    return studyFilters.categories.has(studyCategoryOf(sentence)) ||
+        (studyFilters.categories.has("phrases") && isPhraseCard(sentence));
+}
+function matchesStudyLevel(sentence) {
+    if (studyFilters.level === "all") return true;
+    const level = String(sentence.level || "").trim().toLowerCase();
+    return studyFilters.level === "other" ? level !== "b1" && level !== "b2"
+        : level === studyFilters.level;
+}
+function matchesStudyCard(sentence, checkTopic = true) {
+    if (!matchesStudyCategory(sentence) || !matchesStudyLevel(sentence)) return false;
+    if (checkTopic && studyFilters.kind !== "none" && studyFilters.topic) {
+        return topicTags(sentence)[studyFilters.kind].includes(studyFilters.topic);
+    }
+    return true;
+}
+function matchingStudyIndices(mode) {
+    const dueOnly = mode === "review" && !studyFilters.reviewIncludeAll;
+    const indexes = [];
+    sentences.forEach((sentence, index) => {
+        if (matchesStudyCard(sentence) && (!dueOnly || isDue(sentence))) indexes.push(index);
+    });
+    return indexes;
+}
+function setStudyCategories(category) {
+    if (category === "all") studyFilters.categories.clear();
+    else if (!studyFilters.categories.size) studyFilters.categories.add(category);
+    else if (studyFilters.categories.has(category)) {
+        studyFilters.categories.delete(category);
+        // Clearing the last selected category restores the All/Mixed mode.
+    } else studyFilters.categories.add(category);
+    refreshStudyFiltersAndExercise();
+}
+function setStudyFocusKind(kind) {
+    if (!["none", "grammar", "vocabulary", "writing"].includes(kind)) return;
+    studyFilters.kind = kind; studyFilters.topic = ""; studyFilters.search = "";
+    refreshStudyFiltersAndExercise();
+}
+function setStudyTopicSearch(value) {
+    studyFilters.search = String(value || "").slice(0, 120);
+    // Search is a way to discover a topic, NOT a card-filter until a topic is selected.
+    renderStudyFilters();
+}
+function setStudyFocusTopic(value) {
+    studyFilters.topic = canonicalTopic(value || "");
+    refreshStudyFiltersAndExercise();
+}
+function setStudyLevel(level) {
+    if (!["all", "b1", "b2", "other"].includes(level)) return;
+    studyFilters.level = level;
+    refreshStudyFiltersAndExercise();
+}
+function setReviewIncludeAll(checked) {
+    studyFilters.reviewIncludeAll = Boolean(checked);
+    refreshStudyFiltersAndExercise();
+}
+function resetStudyFilters() {
+    studyFilters.categories.clear(); studyFilters.kind = "none";
+    studyFilters.topic = ""; studyFilters.search = "";
+    studyFilters.level = "all"; studyFilters.reviewIncludeAll = false;
+    refreshStudyFiltersAndExercise();
+}
+function availableStudyTopics() {
+    if (studyFilters.kind === "none") return [];
+    const counts = new Map();
+    for (const sentence of sentences) {
+        if (!matchesStudyCard(sentence, false)) continue;
+        for (const tag of topicTags(sentence)[studyFilters.kind]) {
+            if (tag) counts.set(tag, (counts.get(tag) || 0) + 1);
+        }
+    }
+    return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+function refreshStudyFiltersAndExercise() {
+    // A selected topic is invalidated if the newly selected categories/level
+    // have no matching cards. Never silently fall back to an unrelated topic.
+    if (studyFilters.topic && !availableStudyTopics().some(([tag]) => tag === studyFilters.topic))
+        studyFilters.topic = "";
+    renderStudyFilters();
+    if (document.getElementById("reviewMode").style.display === "block") showReviewMode();
+    else if (document.getElementById("blankMode").style.display === "block") showBlankMode();
+}
+function renderStudyFilters() {
+    const categories = availableStudyCategories();
+    const totals = new Map(categories.map(name => [name, sentences.filter(sentence =>
+        name === "phrases" ? isPhraseCard(sentence) : studyCategoryOf(sentence) === name).length]));
+    const topics = availableStudyTopics();
+    const query = canonicalTopic(studyFilters.search);
+    const filteredTopics = query ? topics.filter(([tag]) => tag.includes(query)) : topics;
+    const matching = sentences.filter(sentence => matchesStudyCard(sentence));
+    const due = matching.filter(isDue).length;
+    for (const mode of ["review", "blank"]) {
+        const chips = document.getElementById(mode + "CategoryChips");
+        if (!chips) continue;
+        chips.replaceChildren();
+        const all = document.createElement("button");
+        all.type = "button"; all.className = "study-filter-chip";
+        all.textContent = "All / Mixed (" + sentences.length + ")";
+        all.setAttribute("aria-pressed", String(studyFilters.categories.size === 0));
+        all.onclick = () => setStudyCategories("all"); chips.appendChild(all);
+        for (const category of categories) {
+            const chip = document.createElement("button");
+            chip.type = "button"; chip.className = "study-filter-chip";
+            chip.textContent = (STUDY_CATEGORY_LABELS[category] || category) + " (" + totals.get(category) + ")";
+            chip.setAttribute("aria-pressed", String(studyFilters.categories.has(category)));
+            chip.onclick = () => setStudyCategories(category);
+            chips.appendChild(chip);
+        }
+        document.getElementById(mode + "FocusKind").value = studyFilters.kind;
+        document.getElementById(mode + "Level").value = studyFilters.level;
+        const topicSearch = document.getElementById(mode + "TopicSearch");
+        topicSearch.disabled = studyFilters.kind === "none";
+        // Don't reset cursor while the user is entering a topic search.
+        if (topicSearch.value !== studyFilters.search) topicSearch.value = studyFilters.search;
+        const select = document.getElementById(mode + "FocusTopic");
+        select.disabled = studyFilters.kind === "none" || !topics.length;
+        select.replaceChildren();
+        const allTopics = document.createElement("option");
+        allTopics.value = ""; allTopics.textContent = "All " +
+            (studyFilters.kind === "none" ? "topics" : studyFilters.kind + " topics");
+        select.appendChild(allTopics);
+        // Include the selected item even if it doesn't match the search field.
+        const visible = filteredTopics.slice(0, STUDY_TOPIC_OPTION_LIMIT);
+        if (studyFilters.topic && !visible.some(([tag]) => tag === studyFilters.topic)) {
+            const selectedEntry = topics.find(([tag]) => tag === studyFilters.topic);
+            if (selectedEntry) visible.unshift(selectedEntry);
+        }
+        for (const [tag, count] of visible) {
+            const option = document.createElement("option");
+            option.value = tag; option.textContent = tag + " (" + count + ")";
+            select.appendChild(option);
+        }
+        select.value = studyFilters.topic || "";
+        const check = document.getElementById("reviewIncludeAll");
+        if (mode === "review" && check) check.checked = studyFilters.reviewIncludeAll;
+        const status = document.getElementById(mode + "FilterStatus");
+        const available = mode === "review" && !studyFilters.reviewIncludeAll ? due : matching.length;
+        status.textContent = matching.length + " matching card(s) · " + due + " due · " +
+            available + " available in " + (mode === "review" ? "Review" : "Fill Blank") +
+            (studyFilters.kind !== "none" ? " · " + topics.length + " topics" +
+                (filteredTopics.length > STUDY_TOPIC_OPTION_LIMIT ? " (showing first " + STUDY_TOPIC_OPTION_LIMIT + "; search to narrow)" : "") : "") +
+            (studyFilters.kind !== "none" && !studyFilters.topic ? " · Choose an exact topic above to narrow cards." : "");
+    }
+}
+function showNoBlankMatches() {
+    currentSentenceId = null;
+    blankFinished = true;
+    document.getElementById("blankExercise").replaceChildren();
+    document.getElementById("blankDifficultyInfo").textContent = "No cards match these filters.";
+    document.getElementById("blankResult").textContent = "Choose another category/topic or press Reset filters.";
+    document.getElementById("blankModelAnswer").style.display = "none";
+    document.getElementById("blankExtraNotes").style.display = "none";
+    document.getElementById("blankListenButton").style.display = "none";
+    document.getElementById("blankHintButton").style.display = "none";
+    document.getElementById("blankHintText").textContent = "";
+    document.getElementById("turkishSentence").textContent = "";
+    document.getElementById("showTurkishButton").style.display = "none";
+}
+
 // ======================================================
 // MODES
 // ======================================================
@@ -2573,6 +2878,7 @@ function showReviewMode() {
     ).style.display =
         "block";
 
+    renderStudyFilters();
 
     if (
         sentences.length === 0
@@ -2628,6 +2934,7 @@ function showBlankMode() {
     ).style.display =
         "block";
 
+    renderStudyFilters();
 
     if (
         sentences.length === 0
@@ -2648,6 +2955,7 @@ function showBlankMode() {
 
         chooseAdaptiveSentence();
 
+    if (currentSentence === -1) { showNoBlankMatches(); return; }
 
     currentSentenceId =
 
@@ -2826,9 +3134,7 @@ function refreshTodayReviewDisplay() {
 // ======================================================
 
 function findRandomDueSentence(excludeIndex = -1) {
-    const due = sentences.map((sentence, index) => isDue(sentence) ? index : -1)
-        .filter(index => index >= 0);
-    return selectWeightedIndex(due, "review", excludeIndex);
+    return selectWeightedIndex(matchingStudyIndices("review"), "review", excludeIndex);
 }
 
 
@@ -2917,7 +3223,9 @@ function showReviewFinished() {
         "question"
     ).textContent =
 
-        "🎉 No more sentences to review today!";
+        sentences.some(sentence => matchesStudyCard(sentence))
+            ? "🎉 No matching reviews due right now!"
+            : "No cards match your filters.";
 
 
     document.getElementById(
@@ -2930,7 +3238,9 @@ function showReviewFinished() {
         "status"
     ).textContent =
 
-        "Come back when your next review is due.";
+        sentences.some(sentence => matchesStudyCard(sentence))
+            ? "Try Fill Blank or enable Include not-due cards for focused practice."
+            : "Choose another category/topic or press Reset filters.";
 }
 
 
@@ -3551,7 +3861,7 @@ function getLearningTags(sentence) {
 }
 
 function chooseAdaptiveSentence(excludeIndex = -1) {
-    return selectWeightedIndex(sentences.map((_, index) => index), "blank", excludeIndex);
+    return selectWeightedIndex(matchingStudyIndices("blank"), "blank", excludeIndex);
 }
 
 // ======================================================
@@ -3989,6 +4299,7 @@ function showTurkish() {
 function checkBlank() {
 
     if (
+        !currentSentenceId ||
         sentences.length === 0 ||
         blankFinished
     ) {
@@ -4247,6 +4558,7 @@ function checkBlank() {
 function showBlankAnswer() {
 
     if (
+        !currentSentenceId ||
         sentences.length === 0 ||
         blankFinished
     ) {
@@ -4381,6 +4693,7 @@ function nextBlankSentence() {
     if (!blankFinished && wrongCountedForCurrentQuestion && currentSentenceId)
         recordTopicOutcome(sentences[currentSentence], 0);
     const newIndex = chooseAdaptiveSentence(currentSentence);
+    if (newIndex === -1) { showNoBlankMatches(); return; }
 
     currentSentence =
         newIndex;

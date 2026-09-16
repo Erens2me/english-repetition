@@ -1,4 +1,4 @@
-const CACHE_NAME = "english-repetition-v7";
+const CACHE_NAME = "english-repetition-v8";
 const FILES_TO_CACHE = ["./", "./index.html", "./manifest.json"];
 
 self.addEventListener("install", event => {

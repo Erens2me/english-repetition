@@ -1,0 +1,6871 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+<title>English Repetition · v6</title>
+
+<link rel="manifest" href="./manifest.json">
+
+<meta name="theme-color" content="#315efb">
+
+<style>
+
+        /* ==================================================
+           DESIGN VARIABLES
+           ================================================== */
+
+        :root {
+            --background: #f4f6f9;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+
+            --text: #172033;
+            --text-light: #677184;
+
+            --border: #dfe4eb;
+
+            --primary: #315efb;
+            --primary-dark: #2148d8;
+
+            --success: #228b4e;
+            --warning: #d98916;
+            --danger: #d74343;
+
+            --purple: #7656d6;
+
+            --radius: 14px;
+            --shadow: 0 6px 22px rgba(20, 32, 60, 0.08);
+        }
+
+
+        /* ==================================================
+           BASE
+           ================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            line-height: 1.5;
+        }
+
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+
+        button {
+            min-height: 44px;
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition:
+                transform 0.1s ease,
+                background 0.15s ease;
+        }
+
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+
+        input,
+        select,
+        textarea {
+            min-height: 44px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: white;
+            color: var(--text);
+        }
+
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 2px solid rgba(49, 94, 251, 0.2);
+            border-color: var(--primary);
+        }
+
+
+        h1,
+        h2,
+        h3 {
+            margin-top: 0;
+        }
+
+
+        /* ==================================================
+           APP LAYOUT
+           ================================================== */
+
+        .app {
+            width: min(100%, 1000px);
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+
+        .app-header {
+            margin-bottom: 20px;
+        }
+
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+
+        .title-row h1 {
+            margin: 0;
+            font-size: clamp(26px, 5vw, 38px);
+        }
+
+
+        .subtitle {
+            color: var(--text-light);
+            margin: 3px 0 0;
+        }
+
+
+        /* ==================================================
+           NAVIGATION
+           ================================================== */
+
+        .main-navigation {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+
+        .main-navigation button {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+
+        .main-navigation button:hover {
+            background: #eef2ff;
+        }
+
+
+        .utility-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+
+        .utility-button {
+            background: #e9edf4;
+            color: var(--text);
+        }
+
+
+        .review-count {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+
+        #backupMessage {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+
+        #undoDeleteArea {
+            padding: 7px 10px;
+            background: #fff2d8;
+            border-radius: 10px;
+        }
+
+
+        /* ==================================================
+           CARDS
+           ================================================== */
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: clamp(18px, 4vw, 30px);
+            margin-bottom: 20px;
+        }
+
+
+        .exercise-label {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+
+        .main-question {
+            font-size: clamp(22px, 5vw, 32px);
+            margin-bottom: 24px;
+        }
+
+
+        .answer-text {
+            font-size: 20px;
+            font-weight: 600;
+            min-height: 30px;
+            margin-top: 20px;
+        }
+
+
+        /* ==================================================
+           BUTTON GROUPS
+           ================================================== */
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+
+        .primary-button {
+            background: var(--primary);
+            color: white;
+        }
+
+
+        .primary-button:hover {
+            background: var(--primary-dark);
+        }
+
+
+        .secondary-button {
+            background: #e9edf4;
+            color: var(--text);
+        }
+
+
+        .danger-button {
+            background: #ffe6e6;
+            color: #a82e2e;
+        }
+
+
+        .edit-button {
+            background: #eef1f6;
+            color: var(--text);
+        }
+
+
+        /* ==================================================
+           REVIEW RATING BUTTONS
+           ================================================== */
+
+        .rating-row {
+            display: grid;
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+
+        .again-button {
+            background: #ffe2e2;
+            color: #a92c2c;
+        }
+
+
+        .hard-button {
+            background: #fff0d7;
+            color: #986114;
+        }
+
+
+        .good-button {
+            background: #e3f4e9;
+            color: #19653a;
+        }
+
+
+        .easy-button {
+            background: #e5ebff;
+            color: #294dc8;
+        }
+
+
+        /* ==================================================
+           STATUS
+           ================================================== */
+
+        .status-box {
+            margin-top: 18px;
+            padding: 14px;
+            background: var(--surface-soft);
+            border-radius: 10px;
+            color: var(--text-light);
+        }
+
+
+        /* ==================================================
+           BLANK MODE
+           ================================================== */
+
+        .session-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+
+        .stat-pill {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 7px 11px;
+            font-size: 14px;
+        }
+
+
+        #blankDifficultyInfo {
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #f2edff;
+            color: #563cb2;
+            font-weight: 700;
+        }
+
+
+        #turkishSentence {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+
+        #blankExercise {
+            font-size: 20px;
+            line-height: 2.2;
+            margin: 18px 0;
+        }
+
+
+        #blankExercise input {
+            width: auto;
+            min-width: 70px;
+            max-width: 150px;
+            margin: 3px;
+            text-align: center;
+        }
+
+
+        #blankResult {
+            min-height: 28px;
+            font-weight: 700;
+        }
+
+        .blank-hint {
+            padding: 10px 12px;
+            background: #fff8e7;
+            color: #65450f;
+            border-radius: 10px;
+            white-space: pre-wrap;
+        }
+        .blank-hint:empty { display: none; }
+        .blank-extra-notes {
+            border-left: 3px solid var(--primary);
+            padding: 10px 14px;
+            margin-top: 12px;
+            background: var(--surface-soft);
+            border-radius: 8px;
+        }
+        #blankExercise input {
+            width: clamp(70px, 16vw, 155px);
+            vertical-align: middle;
+        }
+
+
+        /* ==================================================
+           EDITOR
+           ================================================== */
+
+        #editArea {
+            background: #fffbea;
+            border-color: #f0d889;
+        }
+
+
+        #editArea input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+
+        /* ==================================================
+           ADD SENTENCE
+           ================================================== */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+
+        .form-field label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+
+        .form-field input {
+            width: 100%;
+        }
+
+
+        #addMessage {
+            font-weight: 600;
+        }
+
+
+        /* ==================================================
+           MANAGE MODE
+           ================================================== */
+
+        #searchInput {
+            width: 100%;
+            margin-bottom: 14px;
+        }
+
+
+        #sentenceList > div {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: var(--surface-soft);
+        }
+
+
+        #sentenceList > div > hr {
+            display: none;
+        }
+
+
+        #sentenceList input {
+            width: 100%;
+        }
+
+
+        #sentenceList button {
+            margin-top: 4px;
+            background: #e9edf4;
+        }
+
+
+        /* ==================================================
+           STATISTICS
+           ================================================== */
+
+        #totalStatistics {
+            background: #eef2ff;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+
+        #sentenceStatistics > div {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+
+        #sentenceStatistics > div > hr {
+            display: none;
+        }
+
+
+
+        /* v7: Search-only, paginated per-card statistics. Never draw all cards. */
+        .sentence-stats-search { margin-top: 20px; padding: 16px; background: var(--surface-soft);
+            border: 1px solid var(--border); border-radius: 12px; }
+        .sentence-stats-search label { display:block; font-weight:700; margin-bottom:8px; }
+        .sentence-stats-search-controls { display:flex; flex-wrap:wrap; gap:8px; }
+        #sentenceStatsSearchInput { flex: 1 1 230px; min-width:0; }
+        .sentence-stats-pager { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:12px 0; }
+        .sentence-stats-pager button { background:#e9edf4; color:var(--text); }
+        .sentence-stats-pager button:disabled { cursor:default; opacity:.45; }
+        #sentenceStatsSearchStatus { color:var(--text-light); font-size:14px; margin:10px 0 0; }
+        #sentenceStatistics { margin-top:12px; }
+        #sentenceStatistics strong, #sentenceStatistics p { overflow-wrap:anywhere; }
+
+
+        /* v8: Lightweight study filters, shared by Review and Fill Blank. */
+        .study-filter-panel { margin: 0 0 22px; padding: 15px; border: 1px solid var(--border);
+            border-radius: 12px; background: var(--surface-soft); }
+        .study-filter-panel h3 { margin: 0 0 5px; font-size: 18px; }
+        .study-filter-panel p { margin: 5px 0 10px; }
+        .study-filter-categories { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+        .study-filter-chip { min-height: 40px; padding: 8px 11px; border: 1px solid var(--border);
+            color: var(--text); background: white; border-radius: 999px; font-size: 13px; font-weight: 600; }
+        .study-filter-chip[aria-pressed="true"] { background: #e5ebff; border-color: var(--primary);
+            color: var(--primary-dark); }
+        .study-filter-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .study-filter-field { display:flex; flex-direction:column; gap:5px; min-width:0; }
+        .study-filter-field label { font-weight:600; font-size:13px; }
+        .study-filter-field select, .study-filter-field input { width:100%; min-width:0; }
+        .study-filter-options { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+        .study-filter-options label { display:flex; align-items:center; gap:7px; font-size:14px; }
+        .study-filter-options input[type="checkbox"] { min-height:auto; width:18px; height:18px; }
+        .study-filter-status { color:var(--text-light); font-size:13px; overflow-wrap:anywhere; }
+        @media (max-width: 520px) { .study-filter-grid { grid-template-columns:1fr; } }
+
+        /* ==================================================
+           PRIVATE STUDY STATISTICS (STATISTICS VIEW ONLY)
+           ================================================== */
+
+        .study-overview {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .study-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+            gap: 10px;
+            margin: 12px 0 18px;
+        }
+
+        .study-metric {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .study-metric strong {
+            display: block;
+            font-size: 21px;
+        }
+
+        .study-metric span {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .study-history {
+            width: 100%;
+            border-collapse: collapse;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .study-history th, .study-history td {
+            padding: 9px 6px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .study-history-wrap { overflow-x: auto; }
+
+        .study-note { color: var(--text-light); font-size: 13px; }
+
+        /* CARD PACK IMPORT */
+        #cardPackFileInput, #cardPackPaste { width:100%; }
+        #cardPackPaste { resize:vertical; font-family:ui-monospace, monospace; font-size:13px; }
+        .pack-preview { border:1px solid var(--border); border-radius:12px; padding:16px; background:var(--surface-soft); }
+        .pack-preview p { margin:8px 0; }
+        .pack-preview ul { padding-left:22px; overflow-wrap:anywhere; }
+        .pack-preview li { margin-bottom:10px; }
+        #cardImportMessage { overflow-wrap:anywhere; }
+
+        /* ==================================================
+           MOBILE
+           ================================================== */
+
+        @media (
+            max-width: 700px
+        ) {
+
+            .app {
+                padding: 12px;
+            }
+
+
+            .title-row {
+                display: block;
+            }
+
+
+            .main-navigation {
+                display: grid;
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .main-navigation button {
+                width: 100%;
+            }
+
+
+            .utility-row {
+                display: grid;
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+
+            .review-count,
+            #backupMessage,
+            #undoDeleteArea {
+                grid-column:
+                    1 / -1;
+            }
+
+
+            .rating-row {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .button-row button {
+                flex: 1 1 140px;
+            }
+
+
+            .form-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            #voiceSelect {
+                width: 100%;
+            }
+
+
+            #blankExercise {
+                font-size: 18px;
+            }
+
+        }
+
+
+        @media (
+            max-width: 420px
+        ) {
+
+            .main-navigation,
+            .utility-row {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .rating-row {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+
+            .card {
+                padding: 16px;
+            }
+
+        }
+
+        .topic-panel { margin: 20px 0; padding: 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-soft); }
+        .topic-panel select { max-width: 100%; display: block; margin: 8px 0 14px; }
+        .topic-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; margin: 12px 0; }
+        .topic-summary > div { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 10px; }
+        .topic-summary strong { display: block; font-size: 21px; }
+        .topic-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .topic-item:last-child { border: 0; }
+        .topic-item-header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+        .topic-meter { width: 100%; height: 7px; border-radius: 8px; background: var(--border); margin: 7px 0 4px; overflow: hidden; }
+        .topic-meter > span { display: block; height: 100%; background: var(--primary); }
+        .topic-small { color: var(--text-light); font-size: 13px; }
+        .topic-empty { padding: 12px; background: var(--surface); border-radius: 9px; }
+    </style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
+    <header class="app-header">
+
+        <div class="title-row">
+
+            <div>
+
+                <h1>English Repetition</h1>
+
+                <p class="subtitle">
+                    Learn sentences with adaptive practice
+                    and spaced repetition.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <nav class="main-navigation">
+
+            <button onclick="showReviewMode()">
+                🧠 Review
+            </button>
+
+            <button onclick="showBlankMode()">
+                ✍️ Practice
+            </button>
+
+            <button onclick="showStatisticsMode()">
+                📊 Statistics
+            </button>
+
+            <button onclick="showManageMode()">
+                📝 Manage
+            </button>
+
+            <button onclick="showCardImportMode()">
+                ➕ Add Cards
+            </button>
+
+        </nav>
+
+
+        <div class="utility-row">
+
+            <button
+                class="utility-button"
+                onclick="showTodayReviews()"
+            >
+                📅 Today's Reviews
+            </button>
+
+
+            <span
+                id="todayReviewCount"
+                class="review-count"
+            ></span>
+
+
+            <button
+                class="utility-button"
+                onclick="exportBackup()"
+            >
+                💾 Export Backup
+            </button>
+
+
+            <button
+                class="utility-button"
+                onclick="chooseBackupFile()"
+            >
+                📂 Restore Backup (replaces data)
+            </button>
+
+
+            <input
+                id="backupFileInput"
+                type="file"
+                accept=".json,application/json"
+                style="display:none;"
+                onchange="importBackup(event)"
+            >
+
+
+            <span id="backupMessage"></span>
+
+
+            <span
+                id="undoDeleteArea"
+                style="display:none;"
+            >
+
+                Sentence deleted.
+
+                <button onclick="undoDelete()">
+                    ↩️ Undo
+                </button>
+
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==================================================
+         REVIEW MODE
+         ================================================== -->
+
+    <section
+        id="reviewMode"
+        class="card"
+    >
+
+        <section class="study-filter-panel" aria-labelledby="reviewFilterTitle">
+            <h3 id="reviewFilterTitle">🎯 Choose what to practice</h3>
+            <p class="study-note">All / Mixed combines everything. Tap one category, then add others to mix them.
+                Your selection applies to both Review and Fill Blank.</p>
+            <div id="reviewCategoryChips" class="study-filter-categories" role="group" aria-label="Choose categories"></div>
+            <div class="study-filter-grid">
+                <div class="study-filter-field">
+                    <label for="reviewFocusKind">Focus on a topic (optional)</label>
+                    <select id="reviewFocusKind" onchange="setStudyFocusKind(this.value)">
+                        <option value="none">All topics — mixed</option>
+                        <option value="grammar">Specific grammar</option>
+                        <option value="vocabulary">Specific word / phrase</option>
+                        <option value="writing">Specific writing pattern</option>
+                    </select>
+                </div>
+                <div class="study-filter-field">
+                    <label for="reviewLevel">Level</label>
+                    <select id="reviewLevel" onchange="setStudyLevel(this.value)">
+                        <option value="all">B1 + B2 (all)</option><option value="b1">B1 only</option>
+                        <option value="b2">B2 only</option><option value="other">Other / untagged</option>
+                    </select>
+                </div>
+                <div class="study-filter-field">
+                    <label for="reviewTopicSearch">Find a topic</label>
+                    <input id="reviewTopicSearch" type="search" autocomplete="off" placeholder="Type to filter topics…"
+                        oninput="setStudyTopicSearch(this.value)" disabled>
+                </div>
+                <div class="study-filter-field">
+                    <label for="reviewFocusTopic">Select the exact topic</label>
+                    <select id="reviewFocusTopic" onchange="setStudyFocusTopic(this.value)" disabled>
+                        <option value="">All topics</option>
+                    </select>
+                </div>
+            </div>
+            <div class="study-filter-options">
+                <label for="reviewIncludeAll"><input id="reviewIncludeAll" type="checkbox" onchange="setReviewIncludeAll(this.checked)">
+                    Include not-due cards (focused practice)</label>
+            </div>
+            <div class="study-filter-options"><button type="button" class="secondary-button"
+                onclick="resetStudyFilters()">↺ Reset filters</button></div>
+            <p id="reviewFilterStatus" class="study-filter-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <div id="reviewInstruction" class="exercise-label">
+            Translate this sentence into English
+        </div>
+
+
+        <h2
+            id="question"
+            class="main-question"
+        ></h2>
+
+
+        <div class="button-row">
+
+            <button
+                class="primary-button"
+                onclick="showAnswer()"
+            >
+                Show Answer
+            </button>
+
+
+            <button
+                class="secondary-button"
+                onclick="speakAnswer()"
+            >
+                🔊 Listen
+            </button>
+
+
+            <select id="voiceSelect"></select>
+
+
+            <button
+                class="secondary-button"
+                onclick="nextSentence()"
+            >
+                Skip →
+            </button>
+
+        </div>
+
+
+        <p
+            id="answer"
+            class="answer-text"
+        ></p>
+
+
+        <div
+            id="status"
+            class="status-box"
+        ></div>
+
+
+        <div class="rating-row">
+
+            <button
+                class="again-button"
+                onclick="again()"
+            >
+                Again
+            </button>
+
+            <button
+                class="hard-button"
+                onclick="hard()"
+            >
+                Hard
+            </button>
+
+            <button
+                class="good-button"
+                onclick="good()"
+            >
+                Good
+            </button>
+
+            <button
+                class="easy-button"
+                onclick="easy()"
+            >
+                Easy
+            </button>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <button
+                class="edit-button"
+                onclick="editCurrentSentence()"
+            >
+                ✏️ Edit
+            </button>
+
+            <button
+                class="danger-button"
+                onclick="deleteCurrentSentence()"
+            >
+                🗑️ Delete
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         BLANK MODE
+         ================================================== -->
+
+    <section
+        id="blankMode"
+        class="card"
+        style="display:none;"
+    >
+
+        <h2>✍️ Practice</h2>
+        <section class="study-filter-panel" aria-labelledby="blankFilterTitle">
+            <h3 id="blankFilterTitle">🎯 Choose what to practice</h3>
+            <p class="study-note">All / Mixed combines everything. Tap one category, then add others to mix them.
+                Your selection applies to both Review and Fill Blank.</p>
+            <div id="blankCategoryChips" class="study-filter-categories" role="group" aria-label="Choose categories"></div>
+            <div class="study-filter-grid">
+                <div class="study-filter-field">
+                    <label for="blankFocusKind">Focus on a topic (optional)</label>
+                    <select id="blankFocusKind" onchange="setStudyFocusKind(this.value)">
+                        <option value="none">All topics — mixed</option>
+                        <option value="grammar">Specific grammar</option>
+                        <option value="vocabulary">Specific word / phrase</option>
+                        <option value="writing">Specific writing pattern</option>
+                    </select>
+                </div>
+                <div class="study-filter-field">
+                    <label for="blankLevel">Level</label>
+                    <select id="blankLevel" onchange="setStudyLevel(this.value)">
+                        <option value="all">B1 + B2 (all)</option><option value="b1">B1 only</option>
+                        <option value="b2">B2 only</option><option value="other">Other / untagged</option>
+                    </select>
+                </div>
+                <div class="study-filter-field">
+                    <label for="blankTopicSearch">Find a topic</label>
+                    <input id="blankTopicSearch" type="search" autocomplete="off" placeholder="Type to filter topics…"
+                        oninput="setStudyTopicSearch(this.value)" disabled>
+                </div>
+                <div class="study-filter-field">
+                    <label for="blankFocusTopic">Select the exact topic</label>
+                    <select id="blankFocusTopic" onchange="setStudyFocusTopic(this.value)" disabled>
+                        <option value="">All topics</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="study-filter-options"><button type="button" class="secondary-button"
+                onclick="resetStudyFilters()">↺ Reset filters</button></div>
+            <p id="blankFilterStatus" class="study-filter-status" role="status" aria-live="polite"></p>
+        </section>
+
+
+        <p class="exercise-label">Fill the missing English words. As you improve, more words will be hidden.</p>
+
+
+        <div class="session-stats">
+
+            <span class="stat-pill">
+                ✅ Correct:
+                <strong id="correctScore">0</strong>
+            </span>
+
+            <span class="stat-pill">
+                ❌ Wrong:
+                <strong id="wrongScore">0</strong>
+            </span>
+
+            <span class="stat-pill">
+                👁 Shown:
+                <strong id="shownScore">0</strong>
+            </span>
+
+            <span class="stat-pill">
+                🎯 Accuracy:
+                <strong id="accuracyScore">0%</strong>
+            </span>
+
+        </div>
+
+
+        <p id="blankDifficultyInfo"></p>
+        <div class="button-row">
+            <button id="blankHintButton" class="secondary-button" onclick="showBlankHint()" type="button">💡 Hint 1 / 3</button>
+        </div>
+        <p id="blankHintText" class="blank-hint" aria-live="polite"></p>
+
+
+        <button
+            id="showTurkishButton"
+            class="secondary-button"
+            onclick="showTurkish()"
+        >
+            🇹🇷 Show Turkish
+        </button>
+
+
+        <p id="turkishSentence"></p>
+
+
+        <div id="blankExercise"></div>
+
+
+        <div class="button-row">
+
+            <button
+                class="primary-button"
+                onclick="checkBlank()"
+            >
+                Check Answer
+            </button>
+
+            <button
+                class="secondary-button"
+                onclick="showBlankAnswer()"
+            >
+                Show Answer
+            </button>
+
+            <button
+                class="secondary-button"
+                onclick="nextBlankSentence()"
+            >
+                Next Sentence →
+            </button>
+
+        </div>
+
+
+        <p id="blankResult" aria-live="polite"></p>
+        <p id="blankModelAnswer" class="answer-text" style="display:none;"></p>
+        <div id="blankExtraNotes" class="blank-extra-notes" style="display:none;"></div>
+
+        <div class="button-row">
+            <button
+                id="blankListenButton"
+                class="secondary-button"
+                onclick="speakBlankAnswer()"
+                style="display:none;"
+            >
+                🔊 Listen to the answer
+            </button>
+        </div>
+
+
+        <div class="button-row">
+
+            <button
+                class="edit-button"
+                onclick="editCurrentSentence()"
+            >
+                ✏️ Edit
+            </button>
+
+            <button
+                class="danger-button"
+                onclick="deleteCurrentSentence()"
+            >
+                🗑️ Delete
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         STATISTICS
+         ================================================== -->
+
+    <section
+        id="statisticsMode"
+        class="card"
+        style="display:none;"
+    >
+
+        <h2>📊 Statistics</h2>
+
+        <div id="studyTimeStatistics" class="study-overview" aria-live="polite"></div>
+
+        <section class="topic-panel" aria-labelledby="topicPanelTitle">
+            <h3 id="topicPanelTitle">🧩 Learning by topic</h3>
+            <p class="study-note">Estimated performance from your answers, not a language-level test. A small sample is only an early signal. Card tags are broad: an incorrect answer does not prove which specific topic caused the error.</p>
+            <label for="topicTypeSelect">Show topic group</label>
+            <select id="topicTypeSelect" onchange="displayTopicStatistics()">
+                <option value="grammar">Grammar</option>
+                <option value="writing">Writing patterns & functions</option>
+                <option value="vocabulary">Vocabulary & phrases</option>
+            </select>
+            <div id="topicStatistics" aria-live="polite"></div>
+        </section>
+        <p id="totalStatistics"></p>
+
+        <section class="sentence-stats-search" aria-labelledby="sentenceStatsTitle">
+            <h3 id="sentenceStatsTitle">🔎 Individual card statistics</h3>
+            <p class="study-note">Individual cards stay hidden until you search. Search in Turkish, English, grammar, vocabulary, writing patterns or card ID. Only 20 results are displayed at a time.</p>
+            <label for="sentenceStatsSearchInput">Find a card or a topic</label>
+            <div class="sentence-stats-search-controls">
+                <input id="sentenceStatsSearchInput" type="search" autocomplete="off"
+                    placeholder="e.g. wish, despite, karşılaştırma…"
+                    oninput="queueSentenceStatisticsSearch()">
+                <button class="secondary-button" type="button" onclick="clearSentenceStatisticsSearch()">Clear</button>
+            </div>
+            <p id="sentenceStatsSearchStatus" role="status" aria-live="polite">Enter at least 2 characters to find a card.</p>
+            <div id="sentenceStatistics"></div>
+            <div id="sentenceStatsPager" class="sentence-stats-pager" style="display:none;">
+                <button id="sentenceStatsPrevious" type="button" onclick="changeSentenceStatisticsPage(-1)">← Previous</button>
+                <span id="sentenceStatsPageLabel" aria-live="polite"></span>
+                <button id="sentenceStatsNext" type="button" onclick="changeSentenceStatisticsPage(1)">Next →</button>
+            </div>
+        </section>
+
+    </section>
+
+
+    <!-- ==================================================
+         MANAGE
+         ================================================== -->
+
+    <section
+        id="manageMode"
+        class="card"
+        style="display:none;"
+    >
+
+        <h2>📝 Manage Sentences</h2>
+
+        <p id="sentenceCount"></p>
+
+        <input
+            id="searchInput"
+            type="text"
+            placeholder="Search Turkish or English..."
+            oninput="displaySentenceList()"
+        >
+
+        <div id="sentenceList"></div>
+
+    </section>
+
+
+    <!-- ==================================================
+         ADD NEW CARD PACKS (NEVER REPLACES A BACKUP)
+         ================================================== -->
+
+    <section id="cardImportMode" class="card" style="display:none;">
+        <h2>➕ Add New Cards</h2>
+        <p class="study-note">Import a card-pack JSON file or paste its JSON here. This adds cards without replacing your existing cards, progress or study history.</p>
+        <p class="study-note"><strong>Different action:</strong> Restore Backup replaces your data. Export a backup before installing an update.</p>
+        <div class="form-field">
+            <label for="cardPackFileInput">Choose a card-pack JSON file</label>
+            <input type="file" id="cardPackFileInput" accept=".json,application/json" onchange="loadCardPackFile(event)">
+        </div>
+        <div class="form-field" style="margin-top:14px;">
+            <label for="cardPackPaste">Or paste a card-pack JSON</label>
+            <textarea id="cardPackPaste" rows="5" placeholder='{"format":"english-repetition-card-pack","version":1,"id":"my-pack","title":"My cards","cards":[...]}'></textarea>
+        </div>
+        <div class="button-row">
+            <button class="primary-button" onclick="previewPastedCardPack()">🔎 Preview Cards</button>
+            <button class="secondary-button" onclick="clearCardPackImport()">Clear</button>
+        </div>
+        <p id="cardImportMessage" role="status" aria-live="polite"></p>
+        <div id="cardImportPreview" class="pack-preview" style="display:none;" aria-live="polite"></div>
+        <div class="button-row" id="cardImportActions" style="display:none;">
+            <button id="confirmCardImportButton" class="primary-button" onclick="confirmCardImport()">➕ Add New Cards</button>
+            <button class="secondary-button" onclick="clearCardPackImport()">Cancel</button>
+        </div>
+    </section>
+
+    <!-- ==================================================
+         EDIT AREA
+         ================================================== -->
+
+    <section
+        id="editArea"
+        class="card"
+        style="display:none;"
+    >
+
+        <h2>✏️ Edit Sentence</h2>
+
+
+        <div class="form-field">
+
+            <label>
+                Turkish
+            </label>
+
+            <input
+                id="inlineEditQuestion"
+                type="text"
+            >
+
+        </div>
+
+
+        <div class="form-field">
+
+            <label>
+                English
+            </label>
+
+            <input
+                id="inlineEditAnswer"
+                type="text"
+            >
+
+        </div>
+
+
+        <div class="button-row">
+
+            <button
+                class="primary-button"
+                onclick="saveCurrentEdit()"
+            >
+                💾 Save
+            </button>
+
+            <button
+                class="secondary-button"
+                onclick="cancelCurrentEdit()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <p id="editMessage"></p>
+
+    </section>
+
+
+    <!-- ==================================================
+         ADD SENTENCE
+         ================================================== -->
+
+    <section class="card">
+
+        <h2>➕ Add a New Sentence</h2>
+
+
+        <div class="form-grid">
+
+            <div class="form-field">
+
+                <label for="newQuestion">
+                    Turkish
+                </label>
+
+                <input
+                    id="newQuestion"
+                    type="text"
+                    placeholder="Turkish sentence"
+                >
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label for="newAnswer">
+                    English
+                </label>
+
+                <input
+                    id="newAnswer"
+                    type="text"
+                    placeholder="English sentence"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <button
+                class="primary-button"
+                onclick="addSentence()"
+            >
+                Add Sentence
+            </button>
+
+        </div>
+
+
+        <p id="addMessage"></p>
+
+    </section>
+
+</div>
+
+
+<script>
+
+// ======================================================
+// APP VERSION
+// ======================================================
+
+const DATA_VERSION = 8;
+const RECENT_LIMIT = 10;
+
+
+// ======================================================
+// DEFAULT SENTENCES
+// ======================================================
+
+let sentences = [
+
+    {
+        question:
+            "Bunu anlamakta zorlanıyorum.",
+
+        answer:
+            "I'm having trouble understanding this.",
+
+        correctCount: 0,
+        wrongCount: 0,
+        shownCount: 0,
+
+        masteryScore: 20,
+
+        recentResults: [],
+
+        interval: 0,
+        reviewCount: 0,
+
+        lastReviewed: null,
+        nextReview: null
+    },
+
+    {
+        question:
+            "Biraz mola vermek istiyorum.",
+
+        answer:
+            "I feel like taking a break.",
+
+        correctCount: 0,
+        wrongCount: 0,
+        shownCount: 0,
+
+        masteryScore: 20,
+
+        recentResults: [],
+
+        interval: 0,
+        reviewCount: 0,
+
+        lastReviewed: null,
+        nextReview: null
+    },
+
+    {
+        question:
+            "Ne demek istediğini anlıyorum.",
+
+        answer:
+            "I see what you mean.",
+
+        correctCount: 0,
+        wrongCount: 0,
+        shownCount: 0,
+
+        masteryScore: 20,
+
+        recentResults: [],
+
+        interval: 0,
+        reviewCount: 0,
+
+        lastReviewed: null,
+        nextReview: null
+    }
+
+];
+
+
+// ======================================================
+// CREATE ID
+// ======================================================
+
+function createSentenceId() {
+
+    return (
+        "sentence_" +
+        Date.now() +
+        "_" +
+        Math.random()
+            .toString(36)
+            .substring(2, 9)
+    );
+}
+
+
+// ======================================================
+// SAVE DATA
+// ======================================================
+
+function saveData() {
+
+    localStorage.setItem(
+
+        "sentences",
+
+        JSON.stringify(
+            sentences
+        )
+    );
+}
+
+
+// ======================================================
+// LOAD DATA
+// ======================================================
+
+let savedSentences =
+
+    localStorage.getItem(
+        "sentences"
+    );
+
+
+if (savedSentences) {
+
+    try {
+
+        sentences =
+
+            JSON.parse(
+                savedSentences
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+
+            "Could not read saved sentences:",
+
+            error
+        );
+    }
+}
+
+
+// ======================================================
+// CLAMP
+// ======================================================
+
+function clamp(
+    value,
+    min,
+    max
+) {
+
+    return Math.max(
+
+        min,
+
+        Math.min(
+            max,
+            value
+        )
+    );
+}
+
+
+// ======================================================
+// MIGRATION
+// ======================================================
+
+function migrateSentence(
+    sentence
+) {
+
+    if (!sentence.id) {
+
+        sentence.id =
+            createSentenceId();
+    }
+
+
+    if (!sentence.createdAt) {
+
+        sentence.createdAt =
+            new Date()
+                .toISOString();
+    }
+
+
+    if (
+        typeof sentence.correctCount !==
+        "number"
+    ) {
+
+        sentence.correctCount = 0;
+    }
+
+
+    if (
+        typeof sentence.wrongCount !==
+        "number"
+    ) {
+
+        sentence.wrongCount = 0;
+    }
+
+
+    if (
+        typeof sentence.shownCount !==
+        "number"
+    ) {
+
+        sentence.shownCount = 0;
+    }
+
+
+    if (
+        typeof sentence.interval !==
+        "number"
+    ) {
+
+        sentence.interval = 0;
+    }
+
+
+    if (
+        typeof sentence.reviewCount !==
+        "number"
+    ) {
+
+        sentence.reviewCount = 0;
+    }
+
+
+    if (
+        sentence.lastReviewed ===
+        undefined
+    ) {
+
+        sentence.lastReviewed =
+            null;
+    }
+
+
+    if (
+        sentence.nextReview ===
+        undefined
+    ) {
+
+        sentence.nextReview =
+            null;
+    }
+
+
+    if (
+        typeof sentence.masteryScore !==
+        "number"
+    ) {
+
+        let attempts =
+
+            sentence.correctCount +
+            sentence.wrongCount;
+
+
+        if (
+            attempts === 0
+        ) {
+
+            sentence.masteryScore =
+                20;
+
+        }
+
+        else {
+
+            sentence.masteryScore =
+
+                Math.round(
+
+                    (
+                        sentence.correctCount /
+                        attempts
+                    ) * 100
+                );
+        }
+    }
+
+
+    sentence.masteryScore =
+
+        clamp(
+
+            sentence.masteryScore,
+
+            0,
+
+            100
+        );
+
+
+    if (
+        !Array.isArray(
+            sentence.recentResults
+        )
+    ) {
+
+        sentence.recentResults =
+            [];
+    }
+
+
+    sentence.recentResults =
+
+        sentence.recentResults
+
+            .filter(
+
+                item =>
+
+                    item &&
+
+                    typeof item.type ===
+                    "string"
+            )
+
+            .slice(
+                -RECENT_LIMIT
+            );
+}
+
+
+for (
+    let sentence of sentences
+) {
+
+    migrateSentence(
+        sentence
+    );
+}
+
+
+saveData();
+
+
+// ======================================================
+// GLOBAL VARIABLES
+// ======================================================
+
+let currentSentence = 0;
+
+let currentSentenceId =
+    null;
+
+
+let blankWords =
+    [];
+
+let blankIndexes =
+    [];
+
+let blankSolvedIndexes =
+    [];
+
+let blankHintLevel = 0;
+const recentBlankCardIds = [];
+const recentBlankTags = [];
+const lastBlankPatterns = new Map();
+
+let fullChallenge =
+    false;
+
+let blankFinished =
+    false;
+
+let blankHadWrongAttempt =
+    false;
+
+let wrongCountedForCurrentQuestion =
+    false;
+
+let shownCountedForCurrentQuestion =
+    false;
+
+
+let correctScore = 0;
+
+let wrongScore = 0;
+
+let shownScore = 0;
+
+
+let lastDeletedSentence =
+    null;
+
+let lastDeletedIndex =
+    null;
+
+
+// ======================================================
+// ACTIVE STUDY TIMER / COMPLETED EXERCISES
+// Tracks only visible Review and Practice work. Statistics and
+// Manage never accrue time. A 3-minute inactivity cap prevents an
+// open tab from counting hours of unattended time.
+// ======================================================
+
+const STUDY_STATS_KEY = "englishRepetitionStudyStatsV1";
+const STUDY_IDLE_MS = 3 * 60 * 1000;
+const STUDY_TICK_MS = 10000;
+
+function emptyStudyDay() {
+    return {
+        activeMs: 0,
+        reviewCompleted: 0,
+        blankCorrect: 0,
+        blankRevealed: 0,
+        completedMs: 0
+    };
+}
+
+function normalizeStudyStats(value) {
+    const result = { days: {} };
+    if (!value || typeof value !== "object" ||
+        !value.days || typeof value.days !== "object") {
+        return result;
+    }
+    for (const [day, entry] of Object.entries(value.days)) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(day) ||
+            !entry || typeof entry !== "object") continue;
+        const normalized = emptyStudyDay();
+        for (const key of Object.keys(normalized)) {
+            const number = Number(entry[key]);
+            normalized[key] = Number.isFinite(number) && number >= 0 ?
+                Math.floor(number) : 0;
+        }
+        result.days[day] = normalized;
+    }
+    return result;
+}
+
+function loadStudyStats() {
+    try {
+        return normalizeStudyStats(JSON.parse(
+            localStorage.getItem(STUDY_STATS_KEY) || "null"));
+    } catch (error) {
+        console.warn("Could not load study statistics:", error);
+        return { days: {} };
+    }
+}
+
+let studyStats = loadStudyStats();
+let studyClockLast = Date.now();
+let lastStudyActivity = 0;
+let currentExerciseType = null;
+let currentExerciseId = null;
+let currentExerciseCompleted = false;
+let currentExerciseActiveMs = 0;
+
+function localDayKey(timestamp) {
+    const d = new Date(timestamp);
+    return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"),
+        String(d.getDate()).padStart(2, "0")].join("-");
+}
+
+function studyDay(key) {
+    if (!studyStats.days[key]) studyStats.days[key] = emptyStudyDay();
+    return studyStats.days[key];
+}
+
+function saveStudyStats() {
+    try {
+        localStorage.setItem(STUDY_STATS_KEY, JSON.stringify(studyStats));
+    } catch (error) {
+        console.warn("Could not save study statistics:", error);
+    }
+}
+
+function isStudyViewVisible() {
+    return document.visibilityState === "visible" &&
+        !!currentSentenceId &&
+        (document.getElementById("reviewMode").style.display === "block" ||
+         document.getElementById("blankMode").style.display === "block");
+}
+
+function flushStudyClock(now = Date.now(), allowHidden = false) {
+    if (!Number.isFinite(now) || now <= studyClockLast) {
+        studyClockLast = now;
+        return;
+    }
+    const end = Math.min(now, lastStudyActivity + STUDY_IDLE_MS);
+    const studySectionOpen = !!currentSentenceId &&
+        (document.getElementById("reviewMode").style.display === "block" ||
+         document.getElementById("blankMode").style.display === "block");
+    if (lastStudyActivity > 0 && studySectionOpen &&
+        (allowHidden || document.visibilityState === "visible") &&
+        end > studyClockLast) {
+        let cursor = studyClockLast;
+        // Split study time at local midnight so daily reports stay accurate.
+        while (cursor < end) {
+            const midnight = new Date(cursor);
+            midnight.setHours(24, 0, 0, 0);
+            const next = Math.min(end, midnight.getTime());
+            const delta = next - cursor;
+            studyDay(localDayKey(cursor)).activeMs += delta;
+            if (currentExerciseId && !currentExerciseCompleted) {
+                currentExerciseActiveMs += delta;
+            }
+            cursor = next;
+        }
+        saveStudyStats();
+    }
+    studyClockLast = now;
+}
+
+function noteStudyActivity() {
+    const now = Date.now();
+    flushStudyClock(now);
+    if (isStudyViewVisible()) lastStudyActivity = now;
+    studyClockLast = now;
+}
+
+function pauseStudyClock(allowHidden = false) {
+    flushStudyClock(Date.now(), allowHidden);
+    lastStudyActivity = 0;
+    studyClockLast = Date.now();
+}
+
+function beginStudyExercise(type) {
+    flushStudyClock();
+    currentExerciseType = type;
+    currentExerciseId = currentSentenceId;
+    currentExerciseCompleted = false;
+    currentExerciseActiveMs = 0;
+}
+
+function completeStudyExercise(type) {
+    if (!currentSentenceId || currentExerciseId !== currentSentenceId ||
+        currentExerciseType !== (type === "review" ? "review" : "blank") ||
+        currentExerciseCompleted) return;
+    flushStudyClock();
+    const day = studyDay(localDayKey(Date.now()));
+    if (type === "review") day.reviewCompleted++;
+    else if (type === "blankCorrect") day.blankCorrect++;
+    else if (type === "blankRevealed") day.blankRevealed++;
+    day.completedMs += currentExerciseActiveMs;
+    currentExerciseCompleted = true;
+    saveStudyStats();
+}
+
+function formatStudyDuration(ms) {
+    const seconds = Math.round(ms / 1000);
+    if (seconds < 60) return seconds + " sec";
+    const minutes = Math.floor(seconds / 60);
+    const remainder = seconds % 60;
+    if (minutes < 60) return minutes + " min " + remainder + " sec";
+    return Math.floor(minutes / 60) + " hr " +
+        (minutes % 60) + " min";
+}
+
+function displayStudyStatistics() {
+    const root = document.getElementById("studyTimeStatistics");
+    root.replaceChildren();
+    const heading = document.createElement("h3");
+    heading.textContent = "⏱ Study time & exercise history";
+    root.appendChild(heading);
+    const today = localDayKey(Date.now());
+    const todayData = studyStats.days[today] || emptyStudyDay();
+    const allDays = Object.values(studyStats.days);
+    const totalTime = allDays.reduce((n, d) => n + d.activeMs, 0);
+    const totalCompleted = allDays.reduce((n, d) =>
+        n + d.reviewCompleted + d.blankCorrect + d.blankRevealed, 0);
+    const todayCompleted = todayData.reviewCompleted +
+        todayData.blankCorrect + todayData.blankRevealed;
+    const metrics = document.createElement("div");
+    metrics.className = "study-metrics";
+    const addMetric = (label, value) => {
+        const card = document.createElement("div");
+        card.className = "study-metric";
+        const strong = document.createElement("strong");
+        strong.textContent = value;
+        const text = document.createElement("span");
+        text.textContent = label;
+        card.append(strong, text);
+        metrics.appendChild(card);
+    };
+    addMetric("Today · active study", formatStudyDuration(todayData.activeMs));
+    addMetric("Today · exercises completed", String(todayCompleted));
+    addMetric("Today · average per completed exercise",
+        todayCompleted ? formatStudyDuration(todayData.completedMs / todayCompleted) : "—");
+    addMetric("All-time · active study", formatStudyDuration(totalTime));
+    addMetric("All-time · completed exercises", String(totalCompleted));
+    root.appendChild(metrics);
+
+    const title = document.createElement("h3");
+    title.textContent = "Last 7 days";
+    root.appendChild(title);
+    const wrap = document.createElement("div");
+    wrap.className = "study-history-wrap";
+    const table = document.createElement("table");
+    table.className = "study-history";
+    const head = document.createElement("thead");
+    const headers = document.createElement("tr");
+    for (const name of ["Day", "Active time", "Review", "Blank ✓", "Revealed", "Completed", "Avg."]) {
+        const th = document.createElement("th");
+        th.textContent = name;
+        headers.appendChild(th);
+    }
+    head.appendChild(headers);
+    table.appendChild(head);
+    const body = document.createElement("tbody");
+    for (let offset = 0; offset < 7; offset++) {
+        const date = new Date();
+        date.setHours(12, 0, 0, 0);
+        date.setDate(date.getDate() - offset);
+        const key = localDayKey(date.getTime());
+        const d = studyStats.days[key] || emptyStudyDay();
+        const count = d.reviewCompleted + d.blankCorrect + d.blankRevealed;
+        const row = document.createElement("tr");
+        for (const value of [key, formatStudyDuration(d.activeMs),
+            String(d.reviewCompleted), String(d.blankCorrect),
+            String(d.blankRevealed), String(count),
+            count ? formatStudyDuration(d.completedMs / count) : "—"]) {
+            const td = document.createElement("td");
+            td.textContent = value;
+            row.appendChild(td);
+        }
+        body.appendChild(row);
+    }
+    table.appendChild(body);
+    wrap.appendChild(table);
+    root.appendChild(wrap);
+    const note = document.createElement("p");
+    note.className = "study-note";
+    note.textContent = "Time starts with your first interaction in Review/Practice; " +
+        "it pauses in background, outside exercises, or after 3 minutes without activity. " +
+        "An exercise counts once after a review rating, a correct blank answer, " +
+        "or revealing the blank answer. Skipped questions do not count. " +
+        "Average uses time spent on completed exercises only. " +
+        "Statistics are saved on this device.";
+    root.appendChild(note);
+}
+
+for (const eventName of ["pointerdown", "keydown", "touchstart", "scroll"]) {
+    document.addEventListener(eventName, noteStudyActivity,
+        { capture: true, passive: true });
+}
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") pauseStudyClock(true);
+    else {
+        // Returning to the tab requires a new interaction to resume.
+        lastStudyActivity = 0;
+        studyClockLast = Date.now();
+    }
+});
+window.addEventListener("pagehide", () => pauseStudyClock(true));
+setInterval(() => flushStudyClock(), STUDY_TICK_MS);
+
+// ======================================================
+// v6 TOPIC-BASED LEARNING — separate from card-level mastery
+// ======================================================
+// Historical observations are local per device. One observation per completed
+// exercise is applied to its declared tags (not to an inferred exact error).
+// A writing-function group is supplied explicitly or mapped from the published
+// writing pack's documented 10 x 10 ordering. Individual patterns stay distinct.
+const TOPIC_STATS_KEY = "englishRepetitionTopicStatsV1";
+const TOPIC_HISTORY_LIMIT = 12;
+const WRITING_FUNCTIONS = [
+    "Introducing a topic and thesis", "Expressing viewpoints and cautious claims",
+    "Explaining reasons and causes", "Describing effects and consequences",
+    "Comparing and contrasting", "Using examples and evidence",
+    "Describing data and trends", "Describing processes and methods",
+    "Problems, solutions and evaluation", "Linking ideas and drawing conclusions"
+];
+function canonicalTopic(value) {
+    return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+function tagValues(value) {
+    return (Array.isArray(value) ? value : typeof value === "string" ? [value] : [])
+        .filter(item => typeof item === "string" && item.trim())
+        .map(canonicalTopic);
+}
+function getWritingFunction(sentence) {
+    if (typeof sentence.writingFunction === "string" && sentence.writingFunction.trim())
+        return canonicalTopic(sentence.writingFunction);
+    // Only identify positions for OUR published writing pack, never arbitrary cards.
+    if (sentence.sourcePackId === "eren-b1b2-writing-patterns-100-v1") {
+        const match = /^curriculum-writing-(\d{3})$/.exec(sentence.sourceCardId || "");
+        if (match && Number(match[1]) >= 1 && Number(match[1]) <= 100)
+            return canonicalTopic(WRITING_FUNCTIONS[Math.floor((Number(match[1]) - 1) / 10)]);
+    }
+    return "";
+}
+function topicTags(sentence) {
+    const writing = [...tagValues(sentence.writingPatterns), ...tagValues(sentence.writingPattern)];
+    const writingFunction = getWritingFunction(sentence);
+    if (writingFunction) writing.push("function: " + writingFunction);
+    return {
+        grammar: [...new Set([...tagValues(sentence.grammar), ...tagValues(sentence.grammarTags)])].slice(0, 12),
+        vocabulary: [...new Set(tagValues(sentence.vocabulary))].slice(0, 12),
+        writing: [...new Set(writing)].slice(0, 12)
+    };
+}
+function emptyTopicStats() { return {grammar: {}, vocabulary: {}, writing: {}}; }
+function normalizeTopicStats(value) {
+    const clean = emptyTopicStats();
+    if (!value || typeof value !== "object") return clean;
+    for (const kind of Object.keys(clean)) {
+        const entries = value[kind];
+        if (!entries || typeof entries !== "object" || Array.isArray(entries)) continue;
+        for (const [rawTag, item] of Object.entries(entries).slice(0, 6000)) {
+            const tag = canonicalTopic(rawTag);
+            if (!tag || tag.length > 200 || !item || typeof item !== "object") continue;
+            const recent = Array.isArray(item.recent) ? item.recent
+                .filter(n => typeof n === "number" && Number.isFinite(n))
+                .slice(-TOPIC_HISTORY_LIMIT).map(n => clamp(n, 0, 1)) : [];
+            const attempts = Number.isSafeInteger(item.attempts) && item.attempts >= 0
+                ? item.attempts : recent.length;
+            const total = typeof item.total === "number" && Number.isFinite(item.total)
+                ? clamp(item.total, 0, attempts) : recent.reduce((a,b) => a+b, 0);
+            clean[kind][tag] = {
+                attempts, total, recent,
+                lastPracticed: typeof item.lastPracticed === "string" ? item.lastPracticed : null
+            };
+        }
+    }
+    return clean;
+}
+function loadTopicStats() {
+    try { return normalizeTopicStats(JSON.parse(localStorage.getItem(TOPIC_STATS_KEY) || "null")); }
+    catch (error) { console.warn("Could not read topic stats:", error); return emptyTopicStats(); }
+}
+let topicStats = loadTopicStats();
+function saveTopicStats() {
+    try { localStorage.setItem(TOPIC_STATS_KEY, JSON.stringify(topicStats)); }
+    catch (error) { console.warn("Could not save topic stats:", error); }
+}
+function topicAverage(item) {
+    if (!item || !item.attempts) return null;
+    const recent = item.recent.length ? item.recent : [item.total / item.attempts];
+    // Newer observations count slightly more, while preserving older evidence.
+    let numerator = 0, denominator = 0;
+    recent.forEach((score, index) => {
+        const weight = 1 + index / Math.max(1, recent.length - 1);
+        numerator += score * weight;
+        denominator += weight;
+    });
+    return numerator / denominator;
+}
+function recordTopicOutcome(sentence, quality) {
+    const tags = topicTags(sentence);
+    const now = new Date().toISOString();
+    for (const kind of Object.keys(tags)) {
+        for (const tag of tags[kind]) {
+            const item = topicStats[kind][tag] || {
+                attempts: 0, total: 0, recent: [], lastPracticed: null
+            };
+            item.attempts++;
+            item.total += clamp(quality, 0, 1);
+            item.recent.push(clamp(quality, 0, 1));
+            item.recent = item.recent.slice(-TOPIC_HISTORY_LIMIT);
+            item.lastPracticed = now;
+            topicStats[kind][tag] = item;
+        }
+    }
+    saveTopicStats();
+}
+function topicPriority(sentence) {
+    const tags = topicTags(sentence);
+    const families = ["grammar", "writing", "vocabulary"];
+    const factors = [];
+    for (const kind of families) {
+        const values = tags[kind].filter(t => !t.startsWith("function: "));
+        if (!values.length) continue;
+        const valuesToCheck = values.slice(0, kind === "grammar" ? 4 : 3);
+        let sum = 0;
+        for (const tag of valuesToCheck) {
+            const item = topicStats[kind][tag];
+            const avg = topicAverage(item);
+            // Weak topics return sooner; unseen topics get modest exposure.
+            // Strong topics stay eligible for maintenance reviews.
+            sum += avg === null ? 1.13 : clamp(1.48 - avg * 0.72, 0.78, 1.48);
+            if (!item || item.attempts < 2) sum += 0.08;
+        }
+        factors.push(sum / valuesToCheck.length);
+    }
+    const functionTag = tags.writing.find(t => t.startsWith("function: "));
+    if (functionTag) {
+        const avg = topicAverage(topicStats.writing[functionTag]);
+        factors.push(avg === null ? 1.12 : clamp(1.48 - avg * 0.72, 0.78, 1.48));
+    }
+    return factors.length ? clamp(factors.reduce((a,b)=>a+b,0) / factors.length, 0.7, 1.65) : 1;
+}
+function getTopicCoverage(kind) {
+    const result = new Map();
+    for (const sentence of sentences) {
+        for (const tag of topicTags(sentence)[kind]) result.set(tag, (result.get(tag) || 0) + 1);
+    }
+    return result;
+}
+function displayTopicStatistics() {
+    const root = document.getElementById("topicStatistics");
+    if (!root) return;
+    root.replaceChildren();
+    const kind = document.getElementById("topicTypeSelect").value;
+    if (!topicStats[kind]) return;
+    const coverage = getTopicCoverage(kind);
+    if (!coverage.size) {
+        const message = document.createElement("p");
+        message.className = "topic-empty";
+        message.textContent = "No tagged " + kind + " cards yet. Import a curriculum pack to begin.";
+        root.appendChild(message);
+        return;
+    }
+    const items = [...coverage].map(([tag, cards]) => {
+        const stat = topicStats[kind][tag];
+        return {tag, cards, attempts: stat ? stat.attempts : 0, avg: topicAverage(stat)};
+    });
+    const summary = document.createElement("div");
+    summary.className = "topic-summary";
+    for (const [label, value] of [
+        ["Topics in your cards", String(items.length)],
+        ["Practiced topics", String(items.filter(t => t.attempts > 0).length)],
+        ["Need more practice", String(items.filter(t => t.attempts >= 3 && t.avg < 0.6).length)]
+    ]) {
+        const metric = document.createElement("div");
+        const strong = document.createElement("strong");
+        const caption = document.createElement("span");
+        strong.textContent = value; caption.textContent = label;
+        metric.append(strong, caption); summary.appendChild(metric);
+    }
+    root.appendChild(summary);
+    // Make weak AND under-practiced topics discoverable. No false 0% for unseen tags.
+    items.sort((a,b) => {
+        const pa = a.attempts >= 3 && a.avg < 0.65 ? 0 : a.attempts < 3 ? 1 : 2;
+        const pb = b.attempts >= 3 && b.avg < 0.65 ? 0 : b.attempts < 3 ? 1 : 2;
+        return pa - pb || (a.avg ?? 1) - (b.avg ?? 1) || a.attempts - b.attempts || a.tag.localeCompare(b.tag);
+    });
+    const intro = document.createElement("p");
+    intro.className = "topic-small";
+    intro.textContent = "Showing up to 24 topics needing attention. Tap a different group above. " +
+        "Percentages describe recent exercise quality, not verified language proficiency.";
+    root.appendChild(intro);
+    for (const item of items.slice(0, 24)) {
+        const row = document.createElement("div");
+        row.className = "topic-item";
+        const heading = document.createElement("div");
+        heading.className = "topic-item-header";
+        const name = document.createElement("strong");
+        name.textContent = item.tag.startsWith("function: ")
+            ? "Writing function · " + item.tag.slice(10) : item.tag;
+        const value = document.createElement("span");
+        value.textContent = item.avg === null ? "Not practiced" : Math.round(item.avg * 100) + "%";
+        heading.append(name, value); row.appendChild(heading);
+        if (item.avg !== null) {
+            const meter = document.createElement("div");
+            meter.className = "topic-meter";
+            const filled = document.createElement("span");
+            filled.style.width = Math.round(item.avg * 100) + "%";
+            meter.appendChild(filled); row.appendChild(meter);
+        }
+        const detail = document.createElement("div");
+        detail.className = "topic-small";
+        detail.textContent = item.cards + " card(s) · " + item.attempts + " exercise(s)" +
+            (item.attempts > 0 && item.attempts < 3 ? " · early signal" : "");
+        row.appendChild(detail); root.appendChild(row);
+    }
+}
+// Recent picks are session-only: no hard rule blocks an eligible card.
+const recentReviewIds = [];
+const recentReviewTopicGroups = [];
+function noteReviewPick(sentence) {
+    recentReviewIds.push(sentence.id);
+    if (recentReviewIds.length > 8) recentReviewIds.shift();
+    const primary = topicTags(sentence).grammar[0] || sentence.category || "";
+    recentReviewTopicGroups.push(primary);
+    if (recentReviewTopicGroups.length > 6) recentReviewTopicGroups.shift();
+}
+function selectWeightedIndex(indexes, mode, excludeIndex = -1) {
+    if (!indexes.length) return -1;
+    const options = indexes.length > 1 && indexes.includes(excludeIndex)
+        ? indexes.filter(index => index !== excludeIndex) : indexes;
+    const recentIds = mode === "review" ? recentReviewIds : recentBlankCardIds;
+    const recentGroups = mode === "review" ? recentReviewTopicGroups : recentBlankTags;
+    const weights = options.map(index => {
+        const sentence = sentences[index];
+        let w = (1 + (100 - getEffectiveMastery(sentence)) / 22) * topicPriority(sentence);
+        if (mode === "blank" && isDue(sentence)) w *= 1.25;
+        if (mode === "review" && sentence.nextReview) {
+            const days = Math.max(0, (Date.now() - new Date(sentence.nextReview).getTime()) / 86400000);
+            if (Number.isFinite(days)) w *= 1 + Math.min(days, 20) * 0.025;
+        }
+        const lastIndex = recentIds.lastIndexOf(sentence.id);
+        if (lastIndex !== -1 && options.length > 1)
+            w *= lastIndex >= recentIds.length - 2 ? 0.12 : 0.55;
+        const tags = topicTags(sentence);
+        const primary = tags.grammar[0] || sentence.category || "";
+        if (primary && recentGroups.slice(-2).includes(primary) && options.length > 2) w *= 0.60;
+        // Older untouched cards get modest rotation, even if they are familiar.
+        if (!sentence.reviewCount && sentence.masteryScore <= 20) w *= 1.09;
+        return Math.max(0.02, w);
+    });
+    let roll = Math.random() * weights.reduce((total,n) => total+n, 0);
+    for (let i = 0; i < options.length; i++) {
+        roll -= weights[i];
+        if (roll < 0) return options[i];
+    }
+    return options[options.length - 1];
+}
+
+// ======================================================
+// RECENT PERFORMANCE
+// ======================================================
+
+const RECENT_SIGNAL = {
+
+    fullPerfect:
+        3,
+
+    fullCorrect:
+        1.5,
+
+    normalPerfect:
+        1.5,
+
+    normalCorrect:
+        0.5,
+
+    wrong:
+        -2,
+
+    shown:
+        -3,
+
+    reviewAgain:
+        -3,
+
+    reviewHard:
+        -1,
+
+    reviewGood:
+        1,
+
+    reviewEasy:
+        2.5
+};
+
+
+// ======================================================
+// MASTERY
+// ======================================================
+
+function changeMastery(
+    sentence,
+    amount
+) {
+
+    sentence.masteryScore =
+
+        clamp(
+
+            sentence.masteryScore +
+            amount,
+
+            0,
+
+            100
+        );
+}
+
+
+// ======================================================
+// RECORD RECENT RESULT
+// ======================================================
+
+function recordRecentResult(
+    sentence,
+    type
+) {
+
+    if (
+        !Array.isArray(
+            sentence.recentResults
+        )
+    ) {
+
+        sentence.recentResults =
+            [];
+    }
+
+
+    sentence.recentResults.push({
+
+        type:
+            type,
+
+        date:
+            new Date()
+                .toISOString()
+    });
+
+
+    if (
+        sentence.recentResults.length >
+        RECENT_LIMIT
+    ) {
+
+        sentence.recentResults =
+
+            sentence.recentResults.slice(
+                -RECENT_LIMIT
+            );
+    }
+}
+
+
+// ======================================================
+// APPLY RESULT
+// ======================================================
+
+function applyLearningResult(
+    sentence,
+    type,
+    masteryChange
+) {
+
+    changeMastery(
+        sentence,
+        masteryChange
+    );
+
+
+    recordRecentResult(
+        sentence,
+        type
+    );
+}
+
+
+// ======================================================
+// RECENT ADJUSTMENT
+// ======================================================
+
+function getRecentAdjustment(
+    sentence
+) {
+
+    if (
+        !Array.isArray(
+            sentence.recentResults
+        ) ||
+
+        sentence.recentResults.length ===
+        0
+    ) {
+
+        return 0;
+    }
+
+
+    let weightedSignal = 0;
+
+    let totalWeight = 0;
+
+
+    for (
+        let i = 0;
+        i < sentence.recentResults.length;
+        i++
+    ) {
+
+        let result =
+
+            sentence.recentResults[i];
+
+
+        let signal =
+
+            RECENT_SIGNAL[
+                result.type
+            ] ?? 0;
+
+
+        let recencyWeight =
+            i + 1;
+
+
+        weightedSignal +=
+
+            signal *
+            recencyWeight;
+
+
+        totalWeight +=
+            recencyWeight;
+    }
+
+
+    let averageSignal =
+
+        totalWeight === 0
+
+            ? 0
+
+            : weightedSignal /
+              totalWeight;
+
+
+    return clamp(
+
+        Math.round(
+
+            (
+                averageSignal /
+                3
+            ) * 15
+        ),
+
+        -15,
+
+        15
+    );
+}
+
+
+// ======================================================
+// EFFECTIVE MASTERY
+// ======================================================
+
+function getEffectiveMastery(
+    sentence
+) {
+
+    return clamp(
+
+        sentence.masteryScore +
+
+        getRecentAdjustment(
+            sentence
+        ),
+
+        0,
+
+        100
+    );
+}
+
+
+// ======================================================
+// MASTERY LEVEL
+// ======================================================
+
+function getMasteryLevelFromScore(
+    score
+) {
+
+    if (
+        score < 40
+    ) {
+
+        return "New / Poor";
+    }
+
+
+    if (
+        score < 65
+    ) {
+
+        return "Medium";
+    }
+
+
+    if (
+        score < 85
+    ) {
+
+        return "Good";
+    }
+
+
+    return "Very Good";
+}
+
+
+// ======================================================
+// FULL CHALLENGE CHANCE
+// ======================================================
+
+function getFullChallengeChance(sentence) {
+    // An entire hidden sentence is an advanced challenge, not a surprise for beginners.
+    const mastery = getEffectiveMastery(sentence);
+    if (mastery < 85) return 0;
+    if (mastery < 95) return 0.25;
+    return 0.45;
+}
+
+function shouldUseFullChallenge(
+    sentence
+) {
+
+    return (
+
+        Math.random() <
+
+        getFullChallengeChance(
+            sentence
+        )
+    );
+}
+
+
+
+// ======================================================
+// V8 STUDY FILTERS (shared by Review and Fill Blank)
+// Nothing here modifies saved cards, review dates, or topic performance.
+// ======================================================
+const STUDY_CATEGORY_LABELS = {
+    daily: "Daily English", situation: "Situations", grammar: "Grammar",
+    vocabulary: "Vocabulary", phrases: "Phrases & phrasal verbs",
+    conversation: "Conversation", writing: "Writing",
+    "advanced-blank": "Advanced Fill Blank", uncategorized: "My cards"
+};
+const STUDY_CATEGORY_ORDER = ["daily", "situation", "grammar", "vocabulary",
+    "phrases", "conversation", "writing", "advanced-blank", "uncategorized"];
+const STUDY_TOPIC_OPTION_LIMIT = 85;
+const studyFilters = {
+    // Empty Set means ALL categories. Named category filters are an OR/union.
+    categories: new Set(), kind: "none", topic: "", search: "", level: "all",
+    reviewIncludeAll: false
+};
+
+function studyCategoryOf(sentence) {
+    return typeof sentence.category === "string" && sentence.category.trim()
+        ? sentence.category.trim().toLowerCase() : "uncategorized";
+}
+function isPhraseCard(sentence) {
+    // "Phrases" is a VIRTUAL group; the existing 700-pack needs no changes.
+    // It includes multiword vocabulary and cards explicitly tagged phrasal verbs.
+    const vocab = topicTags(sentence).vocabulary;
+    return vocab.some(value => /\s/.test(value)) ||
+        topicTags(sentence).grammar.includes("phrasal verbs");
+}
+function availableStudyCategories() {
+    const present = new Set(sentences.map(studyCategoryOf));
+    if (sentences.some(isPhraseCard)) present.add("phrases");
+    return [...present].sort((a, b) => {
+        const ai = STUDY_CATEGORY_ORDER.indexOf(a), bi = STUDY_CATEGORY_ORDER.indexOf(b);
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi) || a.localeCompare(b);
+    });
+}
+function matchesStudyCategory(sentence) {
+    if (!studyFilters.categories.size) return true;
+    return studyFilters.categories.has(studyCategoryOf(sentence)) ||
+        (studyFilters.categories.has("phrases") && isPhraseCard(sentence));
+}
+function matchesStudyLevel(sentence) {
+    if (studyFilters.level === "all") return true;
+    const level = String(sentence.level || "").trim().toLowerCase();
+    return studyFilters.level === "other" ? level !== "b1" && level !== "b2"
+        : level === studyFilters.level;
+}
+function matchesStudyCard(sentence, checkTopic = true) {
+    if (!matchesStudyCategory(sentence) || !matchesStudyLevel(sentence)) return false;
+    if (checkTopic && studyFilters.kind !== "none" && studyFilters.topic) {
+        return topicTags(sentence)[studyFilters.kind].includes(studyFilters.topic);
+    }
+    return true;
+}
+function matchingStudyIndices(mode) {
+    const dueOnly = mode === "review" && !studyFilters.reviewIncludeAll;
+    const indexes = [];
+    sentences.forEach((sentence, index) => {
+        if (matchesStudyCard(sentence) && (!dueOnly || isDue(sentence))) indexes.push(index);
+    });
+    return indexes;
+}
+function setStudyCategories(category) {
+    if (category === "all") studyFilters.categories.clear();
+    else if (!studyFilters.categories.size) studyFilters.categories.add(category);
+    else if (studyFilters.categories.has(category)) {
+        studyFilters.categories.delete(category);
+        // Clearing the last selected category restores the All/Mixed mode.
+    } else studyFilters.categories.add(category);
+    refreshStudyFiltersAndExercise();
+}
+function setStudyFocusKind(kind) {
+    if (!["none", "grammar", "vocabulary", "writing"].includes(kind)) return;
+    studyFilters.kind = kind; studyFilters.topic = ""; studyFilters.search = "";
+    refreshStudyFiltersAndExercise();
+}
+function setStudyTopicSearch(value) {
+    studyFilters.search = String(value || "").slice(0, 120);
+    // Search is a way to discover a topic, NOT a card-filter until a topic is selected.
+    renderStudyFilters();
+}
+function setStudyFocusTopic(value) {
+    studyFilters.topic = canonicalTopic(value || "");
+    refreshStudyFiltersAndExercise();
+}
+function setStudyLevel(level) {
+    if (!["all", "b1", "b2", "other"].includes(level)) return;
+    studyFilters.level = level;
+    refreshStudyFiltersAndExercise();
+}
+function setReviewIncludeAll(checked) {
+    studyFilters.reviewIncludeAll = Boolean(checked);
+    refreshStudyFiltersAndExercise();
+}
+function resetStudyFilters() {
+    studyFilters.categories.clear(); studyFilters.kind = "none";
+    studyFilters.topic = ""; studyFilters.search = "";
+    studyFilters.level = "all"; studyFilters.reviewIncludeAll = false;
+    refreshStudyFiltersAndExercise();
+}
+function availableStudyTopics() {
+    if (studyFilters.kind === "none") return [];
+    const counts = new Map();
+    for (const sentence of sentences) {
+        if (!matchesStudyCard(sentence, false)) continue;
+        for (const tag of topicTags(sentence)[studyFilters.kind]) {
+            if (tag) counts.set(tag, (counts.get(tag) || 0) + 1);
+        }
+    }
+    return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+function refreshStudyFiltersAndExercise() {
+    // A selected topic is invalidated if the newly selected categories/level
+    // have no matching cards. Never silently fall back to an unrelated topic.
+    if (studyFilters.topic && !availableStudyTopics().some(([tag]) => tag === studyFilters.topic))
+        studyFilters.topic = "";
+    renderStudyFilters();
+    if (document.getElementById("reviewMode").style.display === "block") showReviewMode();
+    else if (document.getElementById("blankMode").style.display === "block") showBlankMode();
+}
+function renderStudyFilters() {
+    const categories = availableStudyCategories();
+    const totals = new Map(categories.map(name => [name, sentences.filter(sentence =>
+        name === "phrases" ? isPhraseCard(sentence) : studyCategoryOf(sentence) === name).length]));
+    const topics = availableStudyTopics();
+    const query = canonicalTopic(studyFilters.search);
+    const filteredTopics = query ? topics.filter(([tag]) => tag.includes(query)) : topics;
+    const matching = sentences.filter(sentence => matchesStudyCard(sentence));
+    const due = matching.filter(isDue).length;
+    for (const mode of ["review", "blank"]) {
+        const chips = document.getElementById(mode + "CategoryChips");
+        if (!chips) continue;
+        chips.replaceChildren();
+        const all = document.createElement("button");
+        all.type = "button"; all.className = "study-filter-chip";
+        all.textContent = "All / Mixed (" + sentences.length + ")";
+        all.setAttribute("aria-pressed", String(studyFilters.categories.size === 0));
+        all.onclick = () => setStudyCategories("all"); chips.appendChild(all);
+        for (const category of categories) {
+            const chip = document.createElement("button");
+            chip.type = "button"; chip.className = "study-filter-chip";
+            chip.textContent = (STUDY_CATEGORY_LABELS[category] || category) + " (" + totals.get(category) + ")";
+            chip.setAttribute("aria-pressed", String(studyFilters.categories.has(category)));
+            chip.onclick = () => setStudyCategories(category);
+            chips.appendChild(chip);
+        }
+        document.getElementById(mode + "FocusKind").value = studyFilters.kind;
+        document.getElementById(mode + "Level").value = studyFilters.level;
+        const topicSearch = document.getElementById(mode + "TopicSearch");
+        topicSearch.disabled = studyFilters.kind === "none";
+        // Don't reset cursor while the user is entering a topic search.
+        if (topicSearch.value !== studyFilters.search) topicSearch.value = studyFilters.search;
+        const select = document.getElementById(mode + "FocusTopic");
+        select.disabled = studyFilters.kind === "none" || !topics.length;
+        select.replaceChildren();
+        const allTopics = document.createElement("option");
+        allTopics.value = ""; allTopics.textContent = "All " +
+            (studyFilters.kind === "none" ? "topics" : studyFilters.kind + " topics");
+        select.appendChild(allTopics);
+        // Include the selected item even if it doesn't match the search field.
+        const visible = filteredTopics.slice(0, STUDY_TOPIC_OPTION_LIMIT);
+        if (studyFilters.topic && !visible.some(([tag]) => tag === studyFilters.topic)) {
+            const selectedEntry = topics.find(([tag]) => tag === studyFilters.topic);
+            if (selectedEntry) visible.unshift(selectedEntry);
+        }
+        for (const [tag, count] of visible) {
+            const option = document.createElement("option");
+            option.value = tag; option.textContent = tag + " (" + count + ")";
+            select.appendChild(option);
+        }
+        select.value = studyFilters.topic || "";
+        const check = document.getElementById("reviewIncludeAll");
+        if (mode === "review" && check) check.checked = studyFilters.reviewIncludeAll;
+        const status = document.getElementById(mode + "FilterStatus");
+        const available = mode === "review" && !studyFilters.reviewIncludeAll ? due : matching.length;
+        status.textContent = matching.length + " matching card(s) · " + due + " due · " +
+            available + " available in " + (mode === "review" ? "Review" : "Fill Blank") +
+            (studyFilters.kind !== "none" ? " · " + topics.length + " topics" +
+                (filteredTopics.length > STUDY_TOPIC_OPTION_LIMIT ? " (showing first " + STUDY_TOPIC_OPTION_LIMIT + "; search to narrow)" : "") : "") +
+            (studyFilters.kind !== "none" && !studyFilters.topic ? " · Choose an exact topic above to narrow cards." : "");
+    }
+}
+function showNoBlankMatches() {
+    currentSentenceId = null;
+    blankFinished = true;
+    document.getElementById("blankExercise").replaceChildren();
+    document.getElementById("blankDifficultyInfo").textContent = "No cards match these filters.";
+    document.getElementById("blankResult").textContent = "Choose another category/topic or press Reset filters.";
+    document.getElementById("blankModelAnswer").style.display = "none";
+    document.getElementById("blankExtraNotes").style.display = "none";
+    document.getElementById("blankListenButton").style.display = "none";
+    document.getElementById("blankHintButton").style.display = "none";
+    document.getElementById("blankHintText").textContent = "";
+    document.getElementById("turkishSentence").textContent = "";
+    document.getElementById("showTurkishButton").style.display = "none";
+}
+
+// ======================================================
+// MODES
+// ======================================================
+
+function hideAllModes() {
+
+    pauseStudyClock();
+
+    document.getElementById(
+        "reviewMode"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "blankMode"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "statisticsMode"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "manageMode"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "editArea"
+    ).style.display =
+        "none";
+
+    document.getElementById("cardImportMode").style.display = "none";
+}
+
+
+// ======================================================
+// REVIEW MODE
+// ======================================================
+
+function showReviewMode() {
+
+    hideAllModes();
+
+
+    document.getElementById(
+        "reviewMode"
+    ).style.display =
+        "block";
+
+    renderStudyFilters();
+
+    if (
+        sentences.length === 0
+    ) {
+
+        showNoReviewSentences();
+
+        return;
+    }
+
+
+    let dueIndex =
+
+        findRandomDueSentence();
+
+
+    if (
+        dueIndex === -1
+    ) {
+
+        showReviewFinished();
+
+        return;
+    }
+
+
+    currentSentence =
+        dueIndex;
+
+
+    currentSentenceId =
+
+        sentences[
+            currentSentence
+        ].id;
+
+
+    displayCurrentReview();
+}
+
+
+// ======================================================
+// BLANK MODE
+// ======================================================
+
+function showBlankMode() {
+
+    hideAllModes();
+
+
+    document.getElementById(
+        "blankMode"
+    ).style.display =
+        "block";
+
+    renderStudyFilters();
+
+    if (
+        sentences.length === 0
+    ) {
+
+        document.getElementById(
+            "blankExercise"
+        ).textContent =
+
+            "No sentences yet.";
+
+
+        return;
+    }
+
+
+    currentSentence =
+
+        chooseAdaptiveSentence();
+
+    if (currentSentence === -1) { showNoBlankMatches(); return; }
+
+    currentSentenceId =
+
+        sentences[
+            currentSentence
+        ].id;
+
+
+    createBlankExercise();
+}
+
+
+// ======================================================
+// STATISTICS MODE
+// ======================================================
+
+function showStatisticsMode() {
+
+    hideAllModes();
+
+
+    document.getElementById(
+        "statisticsMode"
+    ).style.display =
+        "block";
+
+
+    displayStudyStatistics();
+    displayStatistics();
+    displayTopicStatistics();
+}
+
+
+// ======================================================
+// MANAGE MODE
+// ======================================================
+
+function showManageMode() {
+
+    hideAllModes();
+
+
+    document.getElementById(
+        "manageMode"
+    ).style.display =
+        "block";
+
+
+    displaySentenceList();
+}
+
+
+function showCardImportMode() {
+    hideAllModes();
+    document.getElementById("cardImportMode").style.display = "block";
+}
+
+// ======================================================
+// REVIEW DATES
+// ======================================================
+
+function calculateReviewDate(
+    days
+) {
+
+    let date =
+        new Date();
+
+
+    date.setDate(
+
+        date.getDate() +
+        days
+    );
+
+
+    return date;
+}
+
+
+function isDue(
+    sentence
+) {
+
+    if (
+        !sentence.nextReview
+    ) {
+
+        return true;
+    }
+
+
+    return (
+
+        new Date(
+            sentence.nextReview
+        )
+
+        <=
+
+        new Date()
+    );
+}
+
+
+// ======================================================
+// TODAY'S REVIEWS
+// ======================================================
+
+function countDueReviews() {
+
+    return sentences
+
+        .filter(
+            isDue
+        )
+
+        .length;
+}
+
+
+function showTodayReviews() {
+
+    let count =
+
+        countDueReviews();
+
+
+    let message;
+
+
+    if (
+        count === 0
+    ) {
+
+        message =
+
+            "🎉 No reviews remaining today!";
+
+    }
+
+    else if (
+        count === 1
+    ) {
+
+        message =
+
+            "1 review remaining today.";
+
+    }
+
+    else {
+
+        message =
+
+            count +
+            " reviews remaining today.";
+    }
+
+
+    document.getElementById(
+        "todayReviewCount"
+    ).textContent =
+        message;
+}
+
+
+function refreshTodayReviewDisplay() {
+
+    showTodayReviews();
+}
+
+
+// ======================================================
+// FIND RANDOM DUE
+// ======================================================
+
+function findRandomDueSentence(excludeIndex = -1) {
+    return selectWeightedIndex(matchingStudyIndices("review"), "review", excludeIndex);
+}
+
+
+// ======================================================
+// DISPLAY REVIEW
+// ======================================================
+
+function displayCurrentReview() {
+
+    if (
+        sentences.length === 0
+    ) {
+
+        return;
+    }
+
+
+    let sentence =
+
+        sentences[
+            currentSentence
+        ];
+
+
+    currentSentenceId =
+        sentence.id;
+
+    beginStudyExercise("review");
+    noteReviewPick(sentence);
+
+    const reviewInstruction = document.getElementById("reviewInstruction");
+    reviewInstruction.textContent = sentence.category === "daily" || !sentence.category
+        ? "Translate this sentence into English"
+        : "Read the prompt and produce your answer in English";
+
+    document.getElementById(
+        "question"
+    ).textContent =
+        sentence.question;
+
+
+    document.getElementById(
+        "answer"
+    ).textContent =
+        "";
+
+
+    updateStatus();
+}
+
+
+function showNoReviewSentences() {
+
+    currentSentenceId =
+        null;
+
+
+    document.getElementById(
+        "question"
+    ).textContent =
+
+        "No sentences yet.";
+
+
+    document.getElementById(
+        "answer"
+    ).textContent =
+
+        "Add a sentence first.";
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "";
+}
+
+
+function showReviewFinished() {
+
+    currentSentenceId =
+        null;
+
+
+    document.getElementById(
+        "question"
+    ).textContent =
+
+        sentences.some(sentence => matchesStudyCard(sentence))
+            ? "🎉 No matching reviews due right now!"
+            : "No cards match your filters.";
+
+
+    document.getElementById(
+        "answer"
+    ).textContent =
+        "";
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+
+        sentences.some(sentence => matchesStudyCard(sentence))
+            ? "Try Fill Blank or enable Include not-due cards for focused practice."
+            : "Choose another category/topic or press Reset filters.";
+}
+
+
+// ======================================================
+// REVIEW STATUS
+// ======================================================
+
+function updateStatus() {
+
+    if (
+        sentences.length === 0
+    ) {
+
+        return;
+    }
+
+
+    let sentence =
+
+        sentences[
+            currentSentence
+        ];
+
+
+    let currentMastery =
+
+        getEffectiveMastery(
+            sentence
+        );
+
+
+    let statusText =
+
+        "Mastery: " +
+        sentence.masteryScore +
+        "%<br>" +
+
+        "Current mastery: " +
+        currentMastery +
+        "%<br>" +
+
+        "Total reviews: " +
+        sentence.reviewCount +
+        "<br>" +
+
+        "Current interval: " +
+        sentence.interval +
+        " day(s)";
+
+
+    if (
+        sentence.nextReview
+    ) {
+
+        let date =
+
+            new Date(
+                sentence.nextReview
+            );
+
+
+        statusText +=
+
+            "<br>Next review: " +
+            date.toLocaleDateString();
+    }
+
+
+    document.getElementById(
+        "status"
+    ).innerHTML =
+        statusText;
+}
+
+
+// ======================================================
+// SHOW ANSWER
+// ======================================================
+
+function showAnswer() {
+
+    if (
+        sentences.length === 0 ||
+        !currentSentenceId
+    ) {
+
+        return;
+    }
+
+
+    document.getElementById(
+        "answer"
+    ).textContent =
+
+        sentences[
+            currentSentence
+        ].answer;
+}
+
+
+// ======================================================
+// NEXT REVIEW
+// ======================================================
+
+function nextSentence() {
+
+    if (
+        sentences.length === 0
+    ) {
+
+        showNoReviewSentences();
+
+        return;
+    }
+
+
+    const newIndex = findRandomDueSentence(currentSentence);
+    if (newIndex === -1) {
+        showReviewFinished();
+        refreshTodayReviewDisplay();
+        return;
+    }
+
+    currentSentence =
+        newIndex;
+
+
+    displayCurrentReview();
+}
+
+
+// ======================================================
+// AGAIN
+// ======================================================
+
+function again() {
+
+    if (
+        sentences.length === 0 ||
+        !currentSentenceId
+    ) {
+
+        return;
+    }
+
+
+    let sentence =
+
+        sentences[
+            currentSentence
+        ];
+
+    completeStudyExercise("review");
+
+    sentence.interval =
+        0;
+
+
+    sentence.reviewCount++;
+
+
+    sentence.lastReviewed =
+
+        new Date()
+            .toISOString();
+
+
+    sentence.nextReview =
+
+        new Date()
+            .toISOString();
+
+
+    applyLearningResult(
+
+        sentence,
+
+        "reviewAgain",
+
+        -8
+    );
+
+
+    recordTopicOutcome(sentence, 0);
+
+    saveData();
+
+    refreshTodayReviewDisplay();
+
+    nextSentence();
+}
+
+
+// ======================================================
+// HARD
+// ======================================================
+
+function hard() {
+
+    if (
+        sentences.length === 0 ||
+        !currentSentenceId
+    ) {
+
+        return;
+    }
+
+
+    let sentence =
+
+        sentences[
+            currentSentence
+        ];
+
+
+    if (
+        sentence.interval === 0
+    ) {
+
+        sentence.interval =
+            1;
+
+    }
+
+    else {
+
+        sentence.interval =
+
+            Math.max(
+
+                1,
+
+                Math.round(
+
+                    sentence.interval *
+                    1.5
+                )
+            );
+    }
+
+
+    finishSuccessfulReview(
+
+        sentence,
+
+        "reviewHard",
+
+        -2
+    );
+}
+
+
+// ======================================================
+// GOOD
+// ======================================================
+
+function good() {
+
+    if (
+        sentences.length === 0 ||
+        !currentSentenceId
+    ) {
+
+        return;
+    }
+
+
+    let sentence =
+
+        sentences[
+            currentSentence
+        ];
+
+
+    if (
+        sentence.interval === 0
+    ) {
+
+        sentence.interval =
+            1;
+
+    }
+
+    else if (
+        sentence.interval === 1
+    ) {
+
+        sentence.interval =
+            3;
+
+    }
+
+    else {
+
+        sentence.interval =
+
+            Math.round(
+
+                sentence.interval *
+                2
+            );
+    }
+
+
+    finishSuccessfulReview(
+
+        sentence,
+
+        "reviewGood",
+
+        3
+    );
+}
+
+
+// ======================================================
+// EASY
+// ======================================================
+
+function easy() {
+
+    if (
+        sentences.length === 0 ||
+        !currentSentenceId
+    ) {
+
+        return;
+    }
+
+
+    let sentence =
+
+        sentences[
+            currentSentence
+        ];
+
+
+    if (
+        sentence.interval === 0
+    ) {
+
+        sentence.interval =
+            4;
+
+    }
+
+    else {
+
+        sentence.interval =
+
+            Math.round(
+
+                sentence.interval *
+                2.5
+            );
+    }
+
+
+    finishSuccessfulReview(
+
+        sentence,
+
+        "reviewEasy",
+
+        6
+    );
+}
+
+
+// ======================================================
+// FINISH REVIEW
+// ======================================================
+
+function finishSuccessfulReview(
+    sentence,
+    resultType,
+    masteryChange
+) {
+
+    completeStudyExercise("review");
+    sentence.reviewCount++;
+
+
+    sentence.lastReviewed =
+
+        new Date()
+            .toISOString();
+
+
+    sentence.nextReview =
+
+        calculateReviewDate(
+
+            sentence.interval
+
+        ).toISOString();
+
+
+    applyLearningResult(
+
+        sentence,
+
+        resultType,
+
+        masteryChange
+    );
+
+
+    recordTopicOutcome(sentence, resultType === "reviewHard" ? 0.4 :
+        resultType === "reviewGood" ? 0.8 : 1);
+
+    saveData();
+
+    refreshTodayReviewDisplay();
+
+    nextSentence();
+}
+
+
+// ======================================================
+// NORMALIZE
+// ======================================================
+
+function normalizeSentenceText(
+    text
+) {
+
+    return text
+
+        .toLowerCase()
+
+        .replace(
+            /\s+/g,
+            " "
+        )
+
+        .replace(
+            /[.!?]+$/g,
+            ""
+        )
+
+        .trim();
+}
+
+
+// ======================================================
+// ADD SENTENCE
+// ======================================================
+
+function addSentence() {
+
+    let question =
+
+        document.getElementById(
+            "newQuestion"
+        ).value.trim();
+
+
+    let answer =
+
+        document.getElementById(
+            "newAnswer"
+        ).value.trim();
+
+
+    if (
+        question === "" ||
+        answer === ""
+    ) {
+
+        document.getElementById(
+            "addMessage"
+        ).textContent =
+
+            "Please enter both sentences.";
+
+
+        return;
+    }
+
+
+    let normalizedAnswer =
+
+        normalizeSentenceText(
+            answer
+        );
+
+
+    let duplicate =
+
+        sentences.some(
+
+            sentence =>
+
+                normalizeSentenceText(
+                    sentence.answer
+                )
+
+                ===
+
+                normalizedAnswer
+        );
+
+
+    if (
+        duplicate
+    ) {
+
+        document.getElementById(
+            "addMessage"
+        ).textContent =
+
+            "⚠️ This English sentence already exists.";
+
+
+        return;
+    }
+
+
+    sentences.push({
+
+        id:
+            createSentenceId(),
+
+        createdAt:
+            new Date()
+                .toISOString(),
+
+        question:
+            question,
+
+        answer:
+            answer,
+
+        correctCount:
+            0,
+
+        wrongCount:
+            0,
+
+        shownCount:
+            0,
+
+        masteryScore:
+            20,
+
+        recentResults:
+            [],
+
+        interval:
+            0,
+
+        reviewCount:
+            0,
+
+        lastReviewed:
+            null,
+
+        nextReview:
+            null
+    });
+
+
+    saveData();
+
+
+    document.getElementById(
+        "addMessage"
+    ).textContent =
+
+        "✅ Sentence added successfully!";
+
+
+    document.getElementById(
+        "newQuestion"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "newAnswer"
+    ).value =
+        "";
+
+
+    refreshTodayReviewDisplay();
+}
+
+
+// ======================================================
+// FIND ID
+// ======================================================
+
+function findSentenceIndexById(
+    id
+) {
+
+    return sentences.findIndex(
+
+        sentence =>
+
+            sentence.id === id
+    );
+}
+
+
+// ======================================================
+// ADAPTIVE SELECTION
+// ======================================================
+
+function getLearningTags(sentence) {
+    const fields = [sentence.grammar, sentence.grammarTags,
+        sentence.writingPatterns, sentence.writingPattern, sentence.category];
+    return [...new Set(fields.flatMap(value =>
+        Array.isArray(value) ? value : (typeof value === "string" ? [value] : [])
+    ).filter(value => typeof value === "string" && value.trim())
+        .map(value => value.trim().toLowerCase()))];
+}
+
+function chooseAdaptiveSentence(excludeIndex = -1) {
+    return selectWeightedIndex(matchingStudyIndices("blank"), "blank", excludeIndex);
+}
+
+// ======================================================
+// BLANK COUNT
+// ======================================================
+
+function calculateBlankCount(sentence) {
+    const wordCount = sentence.answer.trim().split(/\s+/).length;
+    const mastery = getEffectiveMastery(sentence);
+    let target = 1;
+    if (mastery >= 40) target = 2;
+    if (mastery >= 55) target = 3;
+    if (mastery >= 70) target = Math.max(4, Math.ceil(wordCount * 0.5));
+    if (mastery >= 85) target = Math.max(5, Math.ceil(wordCount * 0.65));
+    if (mastery >= 95) target = Math.max(6, Math.ceil(wordCount * 0.8));
+    return Math.min(wordCount, target, 10);
+}
+
+// ======================================================
+// CLEAN WORD
+// ======================================================
+
+function cleanWord(
+    word
+) {
+
+    return word
+
+        .toLowerCase()
+
+        .replace(
+            /[.,!?;:"“”‘’()]/g,
+            ""
+        )
+
+        .trim();
+}
+
+
+// ======================================================
+// LOGIC-BASED BLANK TARGETS AND HINTS
+// ======================================================
+
+// These priorities are a fallback for older cards without grammar annotations.
+// New curated cards can specify blankTargets: ["had known", "would have"].
+const STRUCTURE_WORDS = new Set([
+    "am", "is", "are", "was", "were", "be", "been", "being",
+    "have", "has", "had", "do", "does", "did", "would", "could",
+    "should", "might", "must", "will", "can", "if", "unless",
+    "although", "despite", "because", "since", "while", "whereas",
+    "than", "between", "whether", "to", "for", "on", "in", "at",
+    "of", "with", "by", "from", "into", "about", "out", "up", "off"
+]);
+const LOW_VALUE_WORDS = new Set(["the", "a", "an", "i", "you", "he", "she", "it", "we", "they"]);
+const GRAMMAR_TEMPLATES = {
+    "third conditional": "If + had + past participle → would have + past participle.",
+    "second conditional": "If + past simple → would + base verb.",
+    "first conditional": "If + present simple → will + base verb.",
+    "zero conditional": "If + present simple → present simple.",
+    "present perfect": "have/has + past participle.",
+    "present perfect continuous": "have/has + been + verb-ing.",
+    "past perfect": "had + past participle.",
+    "past perfect continuous": "had + been + verb-ing.",
+    "passive voice": "be (in the correct tense) + past participle.",
+    "reported speech": "Check the reporting verb, word order and any necessary tense change.",
+    "relative clauses": "Use who, which, that, whose, where or when as appropriate.",
+    "wish": "For present regrets: wish + past; for past regrets: wish + had + past participle.",
+    "used to": "used to + base verb (past habit).",
+    "be used to": "be used to + noun or verb-ing (familiarity).",
+    "gerund": "A gerund uses verb-ing as a noun.",
+    "infinitive": "An infinitive is usually to + base verb.",
+    "comparison": "Use comparative forms and the correct connector (than / between ... and)."
+};
+
+function normalizedBlankToken(token) {
+    return cleanWord(token).replace(/[’]/g, "'");
+}
+
+function getTargetIndexes(sentence, words) {
+    const targets = Array.isArray(sentence.blankTargets) ? sentence.blankTargets : [];
+    const indexes = new Set();
+    const normalized = words.map(normalizedBlankToken);
+    for (const target of targets) {
+        if (typeof target === "number" && target >= 0 && target < words.length && Number.isInteger(target)) {
+            indexes.add(target);
+        } else if (typeof target === "string") {
+            const pieces = target.trim().toLowerCase().split(/\s+/).map(normalizedBlankToken);
+            for (let i = 0; i <= normalized.length - pieces.length; i++) {
+                if (pieces.length && pieces.every((piece, j) => piece === normalized[i + j])) {
+                    for (let j = 0; j < pieces.length; j++) indexes.add(i + j);
+                }
+            }
+        }
+    }
+    return indexes;
+}
+
+function selectMeaningfulBlanks(sentence, words, count) {
+    const targets = getTargetIndexes(sentence, words);
+    const prior = lastBlankPatterns.get(sentence.id) || [];
+    const available = words.map((word, i) => i).filter(i => normalizedBlankToken(words[i]));
+    const chosen = [];
+    while (chosen.length < count && chosen.length < available.length) {
+        let best = -1;
+        let bestScore = -Infinity;
+        for (const i of available) {
+            if (chosen.includes(i)) continue;
+            const token = normalizedBlankToken(words[i]);
+            let score = targets.has(i) ? 15 : (STRUCTURE_WORDS.has(token) ? 6 : 4);
+            if (LOW_VALUE_WORDS.has(token)) score -= 3;
+            if (prior.includes(i)) score -= 3;
+            // Avoid making every blank part of the same adjacent word sequence.
+            if (chosen.some(index => Math.abs(index - i) === 1) && !targets.has(i)) score -= 2;
+            score += Math.random() * 2.5;
+            if (score > bestScore) { bestScore = score; best = i; }
+        }
+        if (best < 0) break;
+        chosen.push(best);
+    }
+    lastBlankPatterns.set(sentence.id, chosen);
+    return chosen.sort((a, b) => a - b);
+}
+
+function showBlankHint() {
+    if (blankFinished || !currentSentenceId || !sentences.length) return;
+    if (blankHintLevel >= 3) return;
+    blankHintLevel++;
+    const sentence = sentences[currentSentence];
+    const tags = getLearningTags(sentence);
+    let text = "";
+    if (blankHintLevel === 1) {
+        text = tags.length ? "Target: " + tags.join(" · ") :
+            "Read the whole sentence. Work out the tense and meaning before filling the gaps.";
+    } else if (blankHintLevel === 2) {
+        const template = tags.map(tag => GRAMMAR_TEMPLATES[tag]).find(Boolean);
+        text = (typeof sentence.grammarHint === "string" && sentence.grammarHint.trim()) ||
+            template || "Look at the words just before and after each blank. Which structure or natural phrase fits?";
+    } else {
+        text = "First letters (letters per word): " + blankIndexes
+            .filter(i => !blankSolvedIndexes.includes(i))
+            .map(i => {
+                const word = normalizedBlankToken(blankWords[i]);
+                return word ? word[0] + "… (" + word.length + ")" : "—";
+            }).join(" / ");
+    }
+    document.getElementById("blankHintText").textContent = "💡 Hint " + blankHintLevel + ": " + text;
+    const button = document.getElementById("blankHintButton");
+    button.textContent = blankHintLevel === 3 ? "All hints used" : "💡 Hint " + (blankHintLevel + 1) + " / 3";
+    button.disabled = blankHintLevel >= 3;
+}
+
+function displayBlankLearningNotes(sentence) {
+    const root = document.getElementById("blankExtraNotes");
+    root.replaceChildren();
+    const notes = sentence.vocabularyNotes || sentence.learningNotes;
+    const lines = Array.isArray(notes) ? notes : (typeof notes === "string" ? [notes] : []);
+    const safeLines = lines.filter(item => typeof item === "string" && item.trim());
+    if (!safeLines.length) { root.style.display = "none"; return; }
+    const heading = document.createElement("strong");
+    heading.textContent = "Learn more · word meanings and usage";
+    root.appendChild(heading);
+    for (const line of safeLines) {
+        const p = document.createElement("p");
+        p.textContent = line;
+        root.appendChild(p);
+    }
+    root.style.display = "block";
+}
+
+function revealBlankModelAnswer(sentence) {
+    const element = document.getElementById("blankModelAnswer");
+    element.textContent = "Model answer: " + sentence.answer;
+    element.style.display = "block";
+    document.getElementById("blankHintButton").style.display = "none";
+    displayBlankLearningNotes(sentence);
+}
+
+// ======================================================
+// CREATE BLANK
+// ======================================================
+
+function createBlankExercise() {
+    if (!sentences.length) return;
+    const sentence = sentences[currentSentence];
+    currentSentenceId = sentence.id;
+    beginStudyExercise("blank");
+    document.getElementById("blankListenButton").style.display = "none";
+    document.getElementById("blankModelAnswer").style.display = "none";
+    document.getElementById("blankModelAnswer").textContent = "";
+    const notes = document.getElementById("blankExtraNotes");
+    notes.style.display = "none";
+    notes.replaceChildren();
+    blankHintLevel = 0;
+    const hint = document.getElementById("blankHintButton");
+    hint.style.display = "inline-block";
+    hint.disabled = false;
+    hint.textContent = "💡 Hint 1 / 3";
+    document.getElementById("blankHintText").textContent = "";
+    blankWords = sentence.answer.trim().split(/\s+/);
+    blankIndexes = [];
+    blankSolvedIndexes = [];
+    blankFinished = false;
+    blankHadWrongAttempt = false;
+    wrongCountedForCurrentQuestion = false;
+    shownCountedForCurrentQuestion = false;
+    fullChallenge = shouldUseFullChallenge(sentence);
+    if (fullChallenge) {
+        blankIndexes = blankWords.map((word, i) => i).filter(i => normalizedBlankToken(blankWords[i]));
+        // In full-production mode we provide the existing card prompt; no answer is exposed.
+        document.getElementById("turkishSentence").textContent = "📝 " + sentence.question;
+        document.getElementById("showTurkishButton").style.display = "none";
+    } else {
+        document.getElementById("turkishSentence").textContent = "";
+        const promptButton = document.getElementById("showTurkishButton");
+        promptButton.textContent = !sentence.category || sentence.category === "daily"
+            ? "🇹🇷 Show Turkish" : "📝 Show Prompt";
+        promptButton.style.display = "inline-block";
+        blankIndexes = selectMeaningfulBlanks(sentence, blankWords, calculateBlankCount(sentence));
+    }
+    recentBlankCardIds.push(sentence.id);
+    if (recentBlankCardIds.length > 6) recentBlankCardIds.shift();
+    recentBlankTags.push(...getLearningTags(sentence));
+    if (recentBlankTags.length > 12) recentBlankTags.splice(0, recentBlankTags.length - 12);
+    updateBlankDifficultyInfo();
+    renderBlankExercise();
+    document.getElementById("blankResult").textContent = "";
+}
+
+// ======================================================
+// BLANK DIFFICULTY INFO
+// ======================================================
+
+function updateBlankDifficultyInfo() {
+    if (!sentences.length) return;
+    const sentence = sentences[currentSentence];
+    const tags = getLearningTags(sentence);
+    document.getElementById("blankDifficultyInfo").textContent =
+        (fullChallenge ? "🔥 Full sentence · all words hidden" :
+            "Adaptive challenge · " + blankIndexes.length + " blank(s)") +
+        " | Mastery: " + getEffectiveMastery(sentence) + "%" +
+        ((blankHintLevel > 0 || blankFinished) && tags.length ? " | Target: " + tags.join(", ") : "");
+}
+
+// ======================================================
+// RENDER BLANK
+// ======================================================
+
+function renderBlankExercise() {
+
+    let exercise =
+
+        document.getElementById(
+            "blankExercise"
+        );
+
+
+    exercise.innerHTML =
+        "";
+
+
+    for (
+        let i = 0;
+        i < blankWords.length;
+        i++
+    ) {
+
+        let isBlank =
+
+            blankIndexes.includes(
+                i
+            );
+
+
+        let isSolved =
+
+            blankSolvedIndexes.includes(
+                i
+            );
+
+
+        if (
+            isBlank &&
+            !isSolved
+        ) {
+
+            let input =
+
+                document.createElement(
+                    "input"
+                );
+
+
+            input.type =
+                "text";
+
+
+            input.id =
+
+                "blankWord_" +
+                i;
+
+
+            input.size =
+
+                Math.max(
+
+                    5,
+
+                    cleanWord(
+                        blankWords[i]
+                    ).length
+                );
+
+
+            input.autocomplete =
+                "off";
+
+
+            input.addEventListener(
+
+                "keydown",
+
+                function(event) {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+                        checkBlank();
+                    }
+                }
+            );
+
+
+            exercise.appendChild(
+                input
+            );
+
+        }
+
+        else {
+
+            let span =
+
+                document.createElement(
+                    "span"
+                );
+
+
+            span.textContent =
+                blankWords[i];
+
+
+            exercise.appendChild(
+                span
+            );
+        }
+
+
+        exercise.appendChild(
+
+            document.createTextNode(
+                " "
+            )
+        );
+    }
+
+
+    for (
+        let wordIndex of blankIndexes
+    ) {
+
+        let input =
+
+            document.getElementById(
+
+                "blankWord_" +
+                wordIndex
+            );
+
+
+        if (
+            input
+        ) {
+
+            input.focus();
+
+            break;
+        }
+    }
+}
+
+
+// ======================================================
+// SHOW TURKISH
+// ======================================================
+
+function showTurkish() {
+    if (sentences.length === 0 || blankFinished) return;
+    // The translation is a useful clue, so it cannot earn a perfect score.
+    blankHintLevel = Math.max(blankHintLevel, 1);
+    const hintButton = document.getElementById("blankHintButton");
+    if (hintButton && blankHintLevel < 3) hintButton.textContent = "💡 Hint " + (blankHintLevel + 1) + " / 3";
+    document.getElementById("blankHintText").textContent = "💡 Turkish translation shown (counts as a hint).";
+    updateBlankDifficultyInfo();
+
+    document.getElementById(
+        "turkishSentence"
+    ).textContent =
+
+        (!sentences[currentSentence].category || sentences[currentSentence].category === "daily"
+            ? "🇹🇷 " : "📝 ") +
+
+        sentences[
+            currentSentence
+        ].question;
+
+
+    document.getElementById(
+        "showTurkishButton"
+    ).style.display =
+        "none";
+}
+
+
+// ======================================================
+// CHECK BLANK
+// ======================================================
+
+function checkBlank() {
+
+    if (
+        !currentSentenceId ||
+        sentences.length === 0 ||
+        blankFinished
+    ) {
+
+        return;
+    }
+
+
+    let sentence =
+
+        sentences[
+            currentSentence
+        ];
+
+
+    let hadWrongThisCheck =
+        false;
+
+
+    for (
+        let wordIndex of blankIndexes
+    ) {
+
+        if (
+            blankSolvedIndexes.includes(
+                wordIndex
+            )
+        ) {
+
+            continue;
+        }
+
+
+        let input =
+
+            document.getElementById(
+
+                "blankWord_" +
+                wordIndex
+            );
+
+
+        if (!input) {
+
+            continue;
+        }
+
+
+        let userAnswer =
+
+            cleanWord(
+                input.value
+            );
+
+
+        let correctAnswer =
+
+            cleanWord(
+
+                blankWords[
+                    wordIndex
+                ]
+            );
+
+
+        if (
+            userAnswer ===
+            correctAnswer &&
+
+            userAnswer !== ""
+        ) {
+
+            blankSolvedIndexes.push(
+                wordIndex
+            );
+
+        }
+
+        else {
+
+            hadWrongThisCheck =
+                true;
+
+
+            input.value =
+                "";
+        }
+    }
+
+
+    if (
+        blankSolvedIndexes.length ===
+        blankIndexes.length
+    ) {
+
+        blankFinished =
+            true;
+
+        completeStudyExercise("blankCorrect");
+        document.getElementById("blankListenButton").style.display = "inline-block";
+        revealBlankModelAnswer(sentence);
+
+        if (
+            fullChallenge
+        ) {
+
+            if (
+                blankHadWrongAttempt || blankHintLevel > 0
+            ) {
+
+                applyLearningResult(
+
+                    sentence,
+
+                    "fullCorrect",
+
+                    blankHintLevel >= 2 ? 0 : (blankHintLevel ? 2 : 5)
+                );
+
+            }
+
+            else {
+
+                applyLearningResult(
+
+                    sentence,
+
+                    "fullPerfect",
+
+                    12
+                );
+            }
+
+        }
+
+        else {
+
+            if (
+                blankHadWrongAttempt || blankHintLevel > 0
+            ) {
+
+                applyLearningResult(
+
+                    sentence,
+
+                    "normalCorrect",
+
+                    blankHintLevel >= 2 ? 0 : (blankHintLevel ? 1 : 2)
+                );
+
+            }
+
+            else {
+
+                applyLearningResult(
+
+                    sentence,
+
+                    "normalPerfect",
+
+                    5
+                );
+            }
+        }
+
+
+        // One topic observation per finished exercise. A wrong attempt and hints
+        // reduce credit even when the final model answer is completed.
+        const quality = blankHadWrongAttempt ? 0.2 :
+            blankHintLevel === 0 ? 1 : blankHintLevel === 1 ? 0.72 :
+            blankHintLevel === 2 ? 0.48 : 0.28;
+        recordTopicOutcome(sentence, quality);
+
+        correctScore++;
+
+
+        sentence.correctCount++;
+
+
+        saveData();
+
+        updateScore();
+
+        renderBlankExercise();
+
+        updateBlankDifficultyInfo();
+
+
+        document.getElementById(
+            "blankResult"
+        ).textContent =
+
+            "✅ Correct! Press Enter again or click Next Sentence.";
+
+
+        return;
+    }
+
+
+    if (
+        hadWrongThisCheck
+    ) {
+
+        blankHadWrongAttempt =
+            true;
+
+
+        if (
+            !wrongCountedForCurrentQuestion
+        ) {
+
+            wrongScore++;
+
+
+            sentence.wrongCount++;
+
+
+            applyLearningResult(
+
+                sentence,
+
+                "wrong",
+
+                -6
+            );
+
+
+            wrongCountedForCurrentQuestion =
+                true;
+
+
+            saveData();
+
+            updateScore();
+        }
+
+
+        renderBlankExercise();
+
+        updateBlankDifficultyInfo();
+
+
+        document.getElementById(
+            "blankResult"
+        ).textContent =
+
+            "❌ Correct words stayed. Fill the empty boxes again.";
+    }
+}
+
+
+// ======================================================
+// SHOW BLANK ANSWER
+// ======================================================
+
+function showBlankAnswer() {
+
+    if (
+        !currentSentenceId ||
+        sentences.length === 0 ||
+        blankFinished
+    ) {
+
+        return;
+    }
+
+
+    let sentence =
+
+        sentences[
+            currentSentence
+        ];
+
+
+    if (
+        !shownCountedForCurrentQuestion
+    ) {
+
+        shownScore++;
+
+
+        sentence.shownCount++;
+
+
+        applyLearningResult(
+
+            sentence,
+
+            "shown",
+
+            -10
+        );
+
+
+        shownCountedForCurrentQuestion =
+            true;
+
+
+        saveData();
+
+        updateScore();
+    }
+
+
+    blankSolvedIndexes =
+
+        [...blankIndexes];
+
+
+    blankFinished =
+        true;
+
+    recordTopicOutcome(sentence, 0);
+    completeStudyExercise("blankRevealed");
+    document.getElementById("blankListenButton").style.display = "inline-block";
+    revealBlankModelAnswer(sentence);
+
+    renderBlankExercise();
+
+    updateBlankDifficultyInfo();
+
+
+    document.getElementById(
+        "blankResult"
+    ).textContent =
+
+        "Answer shown. Press Enter or click Next Sentence.";
+}
+
+
+// ======================================================
+// ENTER AFTER BLANK FINISHED
+// ======================================================
+
+document.addEventListener(
+
+    "keydown",
+
+    function(event) {
+
+        let blankModeVisible =
+
+            document.getElementById(
+                "blankMode"
+            ).style.display !==
+            "none";
+
+
+        let editVisible =
+
+            document.getElementById(
+                "editArea"
+            ).style.display !==
+            "none";
+
+
+        if (
+            event.key ===
+            "Enter" &&
+
+            blankModeVisible &&
+
+            blankFinished &&
+
+            !editVisible
+        ) {
+
+            event.preventDefault();
+
+            nextBlankSentence();
+        }
+    }
+);
+
+
+// ======================================================
+// NEXT BLANK
+// ======================================================
+
+function nextBlankSentence() {
+
+    if (
+        sentences.length === 0
+    ) {
+
+        return;
+    }
+
+
+    // An abandoned blank question after a wrong attempt still records that weak signal.
+    if (!blankFinished && wrongCountedForCurrentQuestion && currentSentenceId)
+        recordTopicOutcome(sentences[currentSentence], 0);
+    const newIndex = chooseAdaptiveSentence(currentSentence);
+    if (newIndex === -1) { showNoBlankMatches(); return; }
+
+    currentSentence =
+        newIndex;
+
+
+    currentSentenceId =
+
+        sentences[
+            currentSentence
+        ].id;
+
+
+    createBlankExercise();
+}
+
+
+// ======================================================
+// SCORE
+// ======================================================
+
+function updateScore() {
+
+    document.getElementById(
+        "correctScore"
+    ).textContent =
+        correctScore;
+
+
+    document.getElementById(
+        "wrongScore"
+    ).textContent =
+        wrongScore;
+
+
+    document.getElementById(
+        "shownScore"
+    ).textContent =
+        shownScore;
+
+
+    let total =
+
+        correctScore +
+        wrongScore;
+
+
+    let accuracy =
+
+        total > 0
+
+            ? Math.round(
+
+                (
+                    correctScore /
+                    total
+                ) * 100
+            )
+
+            : 0;
+
+
+    document.getElementById(
+        "accuracyScore"
+    ).textContent =
+
+        accuracy +
+        "%";
+}
+
+
+// ======================================================
+// EDIT CURRENT
+// ======================================================
+
+function editCurrentSentence() {
+
+    let editArea =
+
+        document.getElementById(
+            "editArea"
+        );
+
+
+    if (
+        editArea.style.display ===
+        "block"
+    ) {
+
+        editArea.style.display =
+            "none";
+
+
+        return;
+    }
+
+
+    if (
+        sentences.length === 0 ||
+        !currentSentenceId
+    ) {
+
+        return;
+    }
+
+
+    let index =
+
+        findSentenceIndexById(
+            currentSentenceId
+        );
+
+
+    if (
+        index === -1
+    ) {
+
+        return;
+    }
+
+
+    document.getElementById(
+        "inlineEditQuestion"
+    ).value =
+
+        sentences[
+            index
+        ].question;
+
+
+    document.getElementById(
+        "inlineEditAnswer"
+    ).value =
+
+        sentences[
+            index
+        ].answer;
+
+
+    document.getElementById(
+        "editMessage"
+    ).textContent =
+        "";
+
+
+    editArea.style.display =
+        "block";
+}
+
+
+// ======================================================
+// SAVE EDIT
+// ======================================================
+
+function saveCurrentEdit() {
+
+    let index =
+
+        findSentenceIndexById(
+            currentSentenceId
+        );
+
+
+    if (
+        index === -1
+    ) {
+
+        return;
+    }
+
+
+    let question =
+
+        document.getElementById(
+            "inlineEditQuestion"
+        ).value.trim();
+
+
+    let answer =
+
+        document.getElementById(
+            "inlineEditAnswer"
+        ).value.trim();
+
+
+    if (
+        question === "" ||
+        answer === ""
+    ) {
+
+        document.getElementById(
+            "editMessage"
+        ).textContent =
+
+            "Both fields are required.";
+
+
+        return;
+    }
+
+
+    let normalizedAnswer =
+
+        normalizeSentenceText(
+            answer
+        );
+
+
+    for (
+        let i = 0;
+        i < sentences.length;
+        i++
+    ) {
+
+        if (
+            i !== index &&
+
+            normalizeSentenceText(
+                sentences[i].answer
+            )
+
+            ===
+
+            normalizedAnswer
+        ) {
+
+            document.getElementById(
+                "editMessage"
+            ).textContent =
+
+                "⚠️ This English sentence already exists.";
+
+
+            return;
+        }
+    }
+
+
+    sentences[index].question =
+        question;
+
+
+    sentences[index].answer =
+        answer;
+
+
+    saveData();
+
+
+    currentSentence =
+        index;
+
+
+    document.getElementById(
+        "editMessage"
+    ).textContent =
+
+        "✅ Changes saved.";
+
+
+    if (
+        document.getElementById(
+            "reviewMode"
+        ).style.display !==
+        "none"
+    ) {
+
+        displayCurrentReview();
+    }
+
+
+    if (
+        document.getElementById(
+            "blankMode"
+        ).style.display !==
+        "none"
+    ) {
+
+        createBlankExercise();
+    }
+}
+
+
+function cancelCurrentEdit() {
+
+    document.getElementById(
+        "editArea"
+    ).style.display =
+        "none";
+
+    document.getElementById("cardImportMode").style.display = "none";
+}
+
+
+// ======================================================
+// DELETE / UNDO
+// ======================================================
+
+function rememberDeletedSentence(
+    sentence,
+    index
+) {
+
+    lastDeletedSentence =
+
+        JSON.parse(
+
+            JSON.stringify(
+                sentence
+            )
+        );
+
+
+    lastDeletedIndex =
+        index;
+
+
+    document.getElementById(
+        "undoDeleteArea"
+    ).style.display =
+        "inline";
+}
+
+
+function undoDelete() {
+
+    if (
+        lastDeletedSentence ===
+        null
+    ) {
+
+        return;
+    }
+
+
+    let restoreIndex =
+
+        Math.min(
+
+            lastDeletedIndex,
+
+            sentences.length
+        );
+
+
+    sentences.splice(
+
+        restoreIndex,
+
+        0,
+
+        lastDeletedSentence
+    );
+
+
+    saveData();
+
+
+    lastDeletedSentence =
+        null;
+
+
+    lastDeletedIndex =
+        null;
+
+
+    document.getElementById(
+        "undoDeleteArea"
+    ).style.display =
+        "none";
+
+
+    refreshTodayReviewDisplay();
+
+
+    if (
+        document.getElementById(
+            "manageMode"
+        ).style.display !==
+        "none"
+    ) {
+
+        displaySentenceList();
+    }
+
+
+    if (
+        document.getElementById(
+            "statisticsMode"
+        ).style.display !==
+        "none"
+    ) {
+
+        displayStatistics();
+    }
+
+
+    alert(
+        "✅ Sentence restored!"
+    );
+}
+
+
+function deleteCurrentSentence() {
+
+    if (
+        sentences.length === 0 ||
+        !currentSentenceId
+    ) {
+
+        return;
+    }
+
+
+    let wasReviewMode =
+
+        document.getElementById(
+            "reviewMode"
+        ).style.display !==
+        "none";
+
+
+    let index =
+
+        findSentenceIndexById(
+            currentSentenceId
+        );
+
+
+    if (
+        index === -1
+    ) {
+
+        return;
+    }
+
+
+    let confirmation =
+
+        confirm(
+
+            "Delete this sentence?\n\n" +
+
+            sentences[
+                index
+            ].answer
+        );
+
+
+    if (
+        !confirmation
+    ) {
+
+        return;
+    }
+
+
+    rememberDeletedSentence(
+
+        sentences[
+            index
+        ],
+
+        index
+    );
+
+
+    sentences.splice(
+        index,
+        1
+    );
+
+
+    saveData();
+
+
+    currentSentence =
+        0;
+
+
+    currentSentenceId =
+        null;
+
+
+    refreshTodayReviewDisplay();
+
+
+    if (
+        wasReviewMode
+    ) {
+
+        showReviewMode();
+
+    }
+
+    else {
+
+        showBlankMode();
+    }
+}
+
+
+// ======================================================
+// MANAGE LIST
+// ======================================================
+
+function displaySentenceList() {
+
+    let search =
+
+        document.getElementById(
+            "searchInput"
+        ).value
+
+            .toLowerCase()
+
+            .trim();
+
+
+    document.getElementById(
+        "sentenceCount"
+    ).textContent =
+
+        "Total sentences: " +
+        sentences.length;
+
+
+    let container =
+
+        document.getElementById(
+            "sentenceList"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        sentences.length === 0
+    ) {
+
+        container.textContent =
+
+            "No sentences yet.";
+
+
+        return;
+    }
+
+
+    let found =
+        0;
+
+
+    for (
+        let i = 0;
+        i < sentences.length;
+        i++
+    ) {
+
+        let sentence =
+            sentences[i];
+
+
+        let searchable =
+
+            (
+                sentence.question +
+                " " +
+                sentence.answer
+            )
+
+            .toLowerCase();
+
+
+        if (
+            search !== "" &&
+
+            !searchable.includes(
+                search
+            )
+        ) {
+
+            continue;
+        }
+
+
+        found++;
+
+
+        let wrapper =
+
+            document.createElement(
+                "div"
+            );
+
+
+        let title =
+
+            document.createElement(
+                "strong"
+            );
+
+
+        title.textContent =
+
+            "Sentence " +
+            (i + 1) +
+
+            " | Mastery: " +
+            sentence.masteryScore +
+            "%"
+
+            +
+
+            " | Current: " +
+            getEffectiveMastery(
+                sentence
+            ) +
+            "%";
+
+
+        wrapper.appendChild(
+            title
+        );
+
+
+        wrapper.appendChild(
+            document.createElement(
+                "br"
+            )
+        );
+
+
+        wrapper.appendChild(
+            document.createElement(
+                "br"
+            )
+        );
+
+
+        wrapper.appendChild(
+
+            document.createTextNode(
+                "Turkish:"
+            )
+        );
+
+
+        wrapper.appendChild(
+            document.createElement(
+                "br"
+            )
+        );
+
+
+        let questionInput =
+
+            document.createElement(
+                "input"
+            );
+
+
+        questionInput.value =
+            sentence.question;
+
+
+        questionInput.id =
+
+            "manageQuestion_" +
+            sentence.id;
+
+
+        wrapper.appendChild(
+            questionInput
+        );
+
+
+        wrapper.appendChild(
+            document.createElement(
+                "br"
+            )
+        );
+
+
+        wrapper.appendChild(
+            document.createElement(
+                "br"
+            )
+        );
+
+
+        wrapper.appendChild(
+
+            document.createTextNode(
+                "English:"
+            )
+        );
+
+
+        wrapper.appendChild(
+            document.createElement(
+                "br"
+            )
+        );
+
+
+        let answerInput =
+
+            document.createElement(
+                "input"
+            );
+
+
+        answerInput.value =
+            sentence.answer;
+
+
+        answerInput.id =
+
+            "manageAnswer_" +
+            sentence.id;
+
+
+        wrapper.appendChild(
+            answerInput
+        );
+
+
+        wrapper.appendChild(
+            document.createElement(
+                "br"
+            )
+        );
+
+
+        let saveButton =
+
+            document.createElement(
+                "button"
+            );
+
+
+        saveButton.textContent =
+            "Save Changes";
+
+
+        saveButton.onclick =
+
+            () =>
+
+                editSentenceById(
+                    sentence.id
+                );
+
+
+        wrapper.appendChild(
+            saveButton
+        );
+
+
+        wrapper.appendChild(
+
+            document.createTextNode(
+                " "
+            )
+        );
+
+
+        let deleteButton =
+
+            document.createElement(
+                "button"
+            );
+
+
+        deleteButton.textContent =
+            "Delete";
+
+
+        deleteButton.onclick =
+
+            () =>
+
+                deleteSentenceById(
+                    sentence.id
+                );
+
+
+        wrapper.appendChild(
+            deleteButton
+        );
+
+
+        container.appendChild(
+            wrapper
+        );
+    }
+
+
+    if (
+        found === 0
+    ) {
+
+        container.textContent =
+
+            "No matching sentences.";
+    }
+}
+
+
+// ======================================================
+// EDIT FROM MANAGE
+// ======================================================
+
+function editSentenceById(
+    id
+) {
+
+    let index =
+
+        findSentenceIndexById(
+            id
+        );
+
+
+    if (
+        index === -1
+    ) {
+
+        return;
+    }
+
+
+    let question =
+
+        document.getElementById(
+
+            "manageQuestion_" +
+            id
+
+        ).value.trim();
+
+
+    let answer =
+
+        document.getElementById(
+
+            "manageAnswer_" +
+            id
+
+        ).value.trim();
+
+
+    if (
+        question === "" ||
+        answer === ""
+    ) {
+
+        alert(
+            "Both fields are required."
+        );
+
+
+        return;
+    }
+
+
+    let normalizedAnswer =
+
+        normalizeSentenceText(
+            answer
+        );
+
+
+    for (
+        let i = 0;
+        i < sentences.length;
+        i++
+    ) {
+
+        if (
+            i !== index &&
+
+            normalizeSentenceText(
+                sentences[i].answer
+            )
+
+            ===
+
+            normalizedAnswer
+        ) {
+
+            alert(
+
+                "This English sentence already exists."
+            );
+
+
+            return;
+        }
+    }
+
+
+    sentences[index].question =
+        question;
+
+
+    sentences[index].answer =
+        answer;
+
+
+    saveData();
+
+
+    alert(
+        "✅ Sentence updated!"
+    );
+
+
+    displaySentenceList();
+}
+
+
+// ======================================================
+// DELETE MANAGE
+// ======================================================
+
+function deleteSentenceById(
+    id
+) {
+
+    let index =
+
+        findSentenceIndexById(
+            id
+        );
+
+
+    if (
+        index === -1
+    ) {
+
+        return;
+    }
+
+
+    let confirmation =
+
+        confirm(
+
+            "Are you sure you want to delete this sentence?\n\n" +
+
+            sentences[
+                index
+            ].answer
+        );
+
+
+    if (
+        !confirmation
+    ) {
+
+        return;
+    }
+
+
+    rememberDeletedSentence(
+
+        sentences[
+            index
+        ],
+
+        index
+    );
+
+
+    sentences.splice(
+        index,
+        1
+    );
+
+
+    saveData();
+
+    refreshTodayReviewDisplay();
+
+    displaySentenceList();
+}
+
+
+// ======================================================
+// RECENT RESULT LABELS
+// ======================================================
+
+function recentResultLabel(
+    type
+) {
+
+    const labels = {
+
+        fullPerfect:
+            "🔥✅",
+
+        fullCorrect:
+            "🔥✓",
+
+        normalPerfect:
+            "✅",
+
+        normalCorrect:
+            "✓",
+
+        wrong:
+            "❌",
+
+        shown:
+            "👁️",
+
+        reviewAgain:
+            "R:Again",
+
+        reviewHard:
+            "R:Hard",
+
+        reviewGood:
+            "R:Good",
+
+        reviewEasy:
+            "R:Easy"
+    };
+
+
+    return (
+        labels[type] ||
+        type
+    );
+}
+
+
+// ======================================================
+// STATISTICS
+// ======================================================
+
+// Only aggregate statistics are computed when Statistics opens. Card details
+// are generated on demand after a search and capped to one 20-card page.
+const SENTENCE_STATS_PAGE_SIZE = 20;
+let sentenceStatsSearchMatches = [];
+let sentenceStatsSearchPage = 0;
+let sentenceStatsSearchTimer = null;
+
+function normalizedStatsSearch(value) {
+    // Accent-insensitive: "karşılaştırma" matches "karsilastirma".
+    return String(value || "").toLocaleLowerCase("tr")
+        .replace(/ı/g, "i")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .trim();
+}
+
+function sentenceStatsSearchText(sentence) {
+    const strings = [sentence.question, sentence.answer, sentence.category,
+        sentence.sourceCardId, sentence.sourcePackId, sentence.writingFunction];
+    for (const field of ["grammar", "grammarTags", "vocabulary",
+        "writingPattern", "writingPatterns"]) {
+        const value = sentence[field];
+        if (Array.isArray(value)) strings.push(...value);
+        else if (typeof value === "string") strings.push(value);
+    }
+    return normalizedStatsSearch(strings.filter(v => typeof v === "string").join(" "));
+}
+
+function queueSentenceStatisticsSearch() {
+    if (sentenceStatsSearchTimer !== null) clearTimeout(sentenceStatsSearchTimer);
+    sentenceStatsSearchTimer = null;
+    const input = document.getElementById("sentenceStatsSearchInput");
+    const query = normalizedStatsSearch(input.value);
+    if (query.length < 2) {
+        sentenceStatsSearchMatches = [];
+        sentenceStatsSearchPage = 0;
+        renderSentenceStatisticsSearch();
+        return;
+    }
+    const status = document.getElementById("sentenceStatsSearchStatus");
+    status.textContent = "Searching…";
+    // Debouncing keeps repeated keystrokes from triggering a full card scan.
+    sentenceStatsSearchTimer = setTimeout(() => {
+        sentenceStatsSearchTimer = null;
+        runSentenceStatisticsSearch();
+    }, 180);
+}
+
+function runSentenceStatisticsSearch() {
+    const input = document.getElementById("sentenceStatsSearchInput");
+    const query = normalizedStatsSearch(input.value);
+    sentenceStatsSearchMatches = [];
+    sentenceStatsSearchPage = 0;
+    if (query.length >= 2) {
+        // Search the data once; NEVER append every card to the DOM.
+        for (let index = 0; index < sentences.length; index++) {
+            if (sentenceStatsSearchText(sentences[index]).includes(query)) {
+                sentenceStatsSearchMatches.push(index);
+            }
+        }
+    }
+    renderSentenceStatisticsSearch();
+}
+
+function clearSentenceStatisticsSearch() {
+    const input = document.getElementById("sentenceStatsSearchInput");
+    input.value = "";
+    queueSentenceStatisticsSearch();
+    input.focus();
+}
+
+function changeSentenceStatisticsPage(direction) {
+    const pages = Math.ceil(sentenceStatsSearchMatches.length / SENTENCE_STATS_PAGE_SIZE);
+    const nextPage = sentenceStatsSearchPage + direction;
+    if (nextPage < 0 || nextPage >= pages) return;
+    sentenceStatsSearchPage = nextPage;
+    renderSentenceStatisticsSearch();
+    document.getElementById("sentenceStatsTitle").scrollIntoView({block:"start", behavior:"auto"});
+}
+
+function renderSentenceStatisticsSearch() {
+    const container = document.getElementById("sentenceStatistics");
+    const status = document.getElementById("sentenceStatsSearchStatus");
+    const pager = document.getElementById("sentenceStatsPager");
+    container.replaceChildren();
+    const query = normalizedStatsSearch(document.getElementById("sentenceStatsSearchInput").value);
+    if (query.length < 2) {
+        status.textContent = "Enter at least 2 characters to find a card.";
+        pager.style.display = "none";
+        return;
+    }
+    const found = sentenceStatsSearchMatches.length;
+    if (!found) {
+        status.textContent = "No matching cards found. Try another word or grammar tag.";
+        pager.style.display = "none";
+        return;
+    }
+    const pages = Math.ceil(found / SENTENCE_STATS_PAGE_SIZE);
+    sentenceStatsSearchPage = Math.min(sentenceStatsSearchPage, pages - 1);
+    const first = sentenceStatsSearchPage * SENTENCE_STATS_PAGE_SIZE;
+    const last = Math.min(first + SENTENCE_STATS_PAGE_SIZE, found);
+    status.textContent = found + " matching card(s) · showing " + (first + 1) + "–" + last + ".";
+    const fragment = document.createDocumentFragment();
+    for (const index of sentenceStatsSearchMatches.slice(first, last)) {
+        const sentence = sentences[index];
+        const attempts = sentence.correctCount + sentence.wrongCount;
+        const accuracy = attempts ? Math.round(sentence.correctCount / attempts * 100) + "%" : "Not practiced";
+        const mastery = getEffectiveMastery(sentence);
+        const section = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = sentence.answer;
+        const question = document.createElement("p");
+        question.textContent = sentence.question;
+        const details = document.createElement("p");
+        const recent = Array.isArray(sentence.recentResults) && sentence.recentResults.length
+            ? sentence.recentResults.map(item => recentResultLabel(item.type)).join(" → ")
+            : "No recent history yet";
+        // Numeric values and the known result-label mapping are safe here;
+        // all user-authored content is inserted using textContent.
+        details.textContent = "Correct: " + sentence.correctCount +
+            " · Wrong: " + sentence.wrongCount + " · Shown: " + sentence.shownCount +
+            " | Accuracy: " + accuracy +
+            " | Long-term mastery: " + sentence.masteryScore + "%" +
+            " | Current mastery: " + mastery + "%" +
+            " | Level: " + getMasteryLevelFromScore(mastery) +
+            " | Full challenge: " + Math.round(getFullChallengeChance(sentence) * 100) + "%" +
+            " | Interval: " + sentence.interval + " day(s)" +
+            " | Reviews: " + sentence.reviewCount +
+            " | Recent: " + recent;
+        details.className = "study-note";
+        section.append(title, question, details);
+        fragment.appendChild(section);
+    }
+    container.appendChild(fragment);
+    pager.style.display = pages > 1 ? "flex" : "none";
+    document.getElementById("sentenceStatsPrevious").disabled = sentenceStatsSearchPage === 0;
+    document.getElementById("sentenceStatsNext").disabled = sentenceStatsSearchPage === pages - 1;
+    document.getElementById("sentenceStatsPageLabel").textContent =
+        "Page " + (sentenceStatsSearchPage + 1) + " of " + pages;
+}
+
+function displayStatistics() {
+    let totalCorrect = 0, totalWrong = 0, totalShown = 0;
+    let totalMastery = 0, totalEffectiveMastery = 0;
+    let practicedCards = 0, dueCards = 0;
+    for (const sentence of sentences) {
+        totalCorrect += sentence.correctCount;
+        totalWrong += sentence.wrongCount;
+        totalShown += sentence.shownCount;
+        totalMastery += sentence.masteryScore;
+        totalEffectiveMastery += getEffectiveMastery(sentence);
+        if (sentence.reviewCount || sentence.correctCount || sentence.wrongCount || sentence.shownCount) practicedCards++;
+        if (isDue(sentence)) dueCards++;
+    }
+    const attempts = totalCorrect + totalWrong;
+    const accuracy = attempts ? Math.round(totalCorrect / attempts * 100) : 0;
+    const avgMastery = sentences.length ? Math.round(totalMastery / sentences.length) : 0;
+    const avgCurrent = sentences.length ? Math.round(totalEffectiveMastery / sentences.length) : 0;
+    document.getElementById("totalStatistics").innerHTML =
+        "<strong>Overall Statistics</strong><br><br>" +
+        "Total cards: " + sentences.length + "<br>" +
+        "Cards practiced: " + practicedCards + "<br>" +
+        "Due for review: " + dueCards + "<br>" +
+        "Correct: " + totalCorrect + "<br>Wrong: " + totalWrong +
+        "<br>Shown: " + totalShown + "<br>Accuracy: " + accuracy +
+        "%<br>Average long-term mastery: " + avgMastery +
+        "%<br>Average current mastery: " + avgCurrent + "%";
+    // No per-card rendering until the user supplies a search term.
+    queueSentenceStatisticsSearch();
+}
+
+
+// ======================================================
+// VOICE · ANDROID / CHROME SAFE FALLBACK
+// ======================================================
+
+const VOICE_STORAGE_KEY = "englishRepetitionVoiceURI";
+let voices = [];
+let activeSpeech = null;
+
+function hasSpeechSupport() {
+    return "speechSynthesis" in window &&
+        typeof SpeechSynthesisUtterance !== "undefined";
+}
+
+function isEnglishVoice(voice) {
+    return /^en(?:[-_]|$)/i.test(String(voice.lang || "").trim());
+}
+
+function loadVoices() {
+    const voiceSelect = document.getElementById("voiceSelect");
+    const savedChoice = localStorage.getItem(VOICE_STORAGE_KEY);
+    voices = hasSpeechSupport() ? window.speechSynthesis.getVoices() : [];
+
+    voiceSelect.replaceChildren();
+
+    // Some Android Chrome versions return an empty voice list even though
+    // speechSynthesis.speak() works. Never disable playback for that reason.
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "default";
+    defaultOption.textContent = "Default English voice";
+    voiceSelect.appendChild(defaultOption);
+
+    let savedIndex = -1;
+    let usIndex = -1;
+    voices.forEach((voice, index) => {
+        if (!isEnglishVoice(voice)) return;
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = voice.name + " (" + voice.lang + ")";
+        voiceSelect.appendChild(option);
+        if (savedChoice && voice.voiceURI === savedChoice) savedIndex = index;
+        if (usIndex < 0 && /^en[-_]US$/i.test(voice.lang)) usIndex = index;
+    });
+
+    // Keep an explicit choice of the browser's default voice; otherwise
+    // restore a previous choice or prefer US English when available.
+    if (savedChoice === "default") {
+        voiceSelect.value = "default";
+    } else if (savedIndex >= 0) {
+        voiceSelect.value = String(savedIndex);
+    } else if (usIndex >= 0) {
+        voiceSelect.value = String(usIndex);
+    } else {
+        voiceSelect.value = "default";
+    }
+    voiceSelect.disabled = !hasSpeechSupport();
+}
+
+if (hasSpeechSupport()) {
+    if (typeof window.speechSynthesis.addEventListener === "function") {
+        window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    } else {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    // Some mobile voice engines initialize after the page's initial script.
+    // These retries are bounded and never start speech without a user tap.
+    [300, 1200, 3000].forEach(delay => setTimeout(loadVoices, delay));
+    window.addEventListener("pageshow", loadVoices);
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") loadVoices();
+    });
+}
+
+document.getElementById("voiceSelect").addEventListener("change", event => {
+    const value = event.target.value;
+    if (value === "default") {
+        localStorage.setItem(VOICE_STORAGE_KEY, "default");
+        return;
+    }
+    const chosen = voices[Number(value)];
+    if (chosen && isEnglishVoice(chosen)) {
+        localStorage.setItem(VOICE_STORAGE_KEY, chosen.voiceURI);
+    }
+});
+
+loadVoices();
+
+function speakEnglishSentence(text) {
+    if (!hasSpeechSupport()) {
+        alert("Speech playback is not supported by this browser.");
+        return;
+    }
+    if (typeof text !== "string" || !text.trim()) return;
+
+    // Refresh voices on the actual button tap, not only during page load.
+    loadVoices();
+    const voiceSelect = document.getElementById("voiceSelect");
+    const value = voiceSelect.value;
+    const chosen = value !== "default" ? voices[Number(value)] : null;
+
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US";
+    speech.rate = 0.92;
+
+    // Without an exposed English voice, leave speech.voice unset and let
+    // the browser select its own voice for speech.lang.
+    if (chosen && isEnglishVoice(chosen)) {
+        speech.voice = chosen;
+        speech.lang = chosen.lang.replace("_", "-");
+    }
+
+    activeSpeech = speech;
+    speech.onend = () => {
+        if (activeSpeech === speech) activeSpeech = null;
+    };
+    speech.onerror = event => {
+        if (activeSpeech === speech) activeSpeech = null;
+        if (event.error === "canceled" || event.error === "interrupted") return;
+        console.warn("Speech playback error:", event.error);
+        alert("Audio playback failed. Check Chrome audio settings and try again.");
+    };
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(speech);
+}
+
+function speakAnswer() {
+    if (!currentSentenceId || !sentences.length) return;
+    speakEnglishSentence(sentences[currentSentence].answer);
+}
+
+function speakBlankAnswer() {
+    if (!blankFinished || !currentSentenceId || !sentences.length ||
+        document.getElementById("blankMode").style.display !== "block") return;
+    speakEnglishSentence(sentences[currentSentence].answer);
+}
+
+// ======================================================
+// NON-DESTRUCTIVE CARD PACK IMPORT · FORMAT VERSION 1
+// ======================================================
+
+const CARD_PACK_FORMAT = "english-repetition-card-pack";
+const CARD_PACK_MAX_BYTES = 8 * 1024 * 1024;
+const CARD_PACK_MAX_CARDS = 3000;
+let pendingCardPack = null;
+
+function cardIdentity(question, answer) {
+    return normalizeSentenceText(question).normalize("NFC") + "\u001f" +
+        normalizeSentenceText(answer).normalize("NFC");
+}
+
+function cardImportError(message) {
+    pendingCardPack = null;
+    document.getElementById("cardImportPreview").style.display = "none";
+    document.getElementById("cardImportActions").style.display = "none";
+    document.getElementById("cardImportMessage").textContent = "❌ " + message;
+}
+
+function clearCardPackImport() {
+    pendingCardPack = null;
+    document.getElementById("cardPackFileInput").value = "";
+    document.getElementById("cardPackPaste").value = "";
+    document.getElementById("cardImportMessage").textContent = "";
+    document.getElementById("cardImportPreview").replaceChildren();
+    document.getElementById("cardImportPreview").style.display = "none";
+    document.getElementById("cardImportActions").style.display = "none";
+}
+
+function loadCardPackFile(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    pendingCardPack = null;
+    document.getElementById("cardImportPreview").style.display = "none";
+    document.getElementById("cardImportActions").style.display = "none";
+    if (file.size > CARD_PACK_MAX_BYTES) {
+        cardImportError("File is too large (8 MB maximum).");
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+        document.getElementById("cardPackPaste").value = "";
+        previewCardPackText(String(reader.result || ""));
+    };
+    reader.onerror = () => cardImportError("Could not read the selected file.");
+    reader.readAsText(file, "UTF-8");
+}
+
+function previewPastedCardPack() {
+    const text = document.getElementById("cardPackPaste").value;
+    if (!text.trim()) {
+        cardImportError("Choose a card-pack file or paste JSON first.");
+        return;
+    }
+    previewCardPackText(text);
+}
+
+function validatedCardString(value, label, maxLength = 1200) {
+    if (typeof value !== "string" || !value.trim() || value.length > maxLength) {
+        throw new Error(label + " must be nonempty text (max " + maxLength + " characters).");
+    }
+    return value.trim();
+}
+
+function optionalCardString(value, label, maxLength = 500) {
+    if (value === undefined || value === null) return undefined;
+    return validatedCardString(value, label, maxLength);
+}
+
+function optionalCardTags(value, label) {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value === "string") return validatedCardString(value, label, 120);
+    if (!Array.isArray(value) || value.length > 20 || !value.every(
+        item => typeof item === "string" && item.trim() && item.length <= 120
+    )) throw new Error(label + " must contain up to 20 short text tags.");
+    return [...new Set(value.map(item => item.trim()))];
+}
+
+function optionalCardNotes(value, label) {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value === "string") return validatedCardString(value, label, 1000);
+    if (!Array.isArray(value) || value.length > 15 || !value.every(
+        item => typeof item === "string" && item.trim() && item.length <= 1000
+    )) throw new Error(label + " must contain up to 15 text notes.");
+    return value.map(item => item.trim());
+}
+
+function validateCardPack(raw) {
+    if (raw && raw.app === "English Repetition" && Array.isArray(raw.sentences)) {
+        throw new Error("This is a BACKUP, not a card pack. Use Restore Backup only when you want to replace existing data.");
+    }
+    if (!raw || Array.isArray(raw) || typeof raw !== "object" || raw.format !== CARD_PACK_FORMAT || raw.version !== 1) {
+        throw new Error("Expected a card-pack JSON with format 'english-repetition-card-pack' and version 1.");
+    }
+    const packId = validatedCardString(raw.id, "Pack id", 100);
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(packId)) {
+        throw new Error("Pack id can use only letters, numbers, dots, underscores and hyphens.");
+    }
+    const title = validatedCardString(raw.title, "Pack title", 120);
+    if (!Array.isArray(raw.cards) || !raw.cards.length || raw.cards.length > CARD_PACK_MAX_CARDS) {
+        throw new Error("A card pack must contain between 1 and " + CARD_PACK_MAX_CARDS + " cards.");
+    }
+    const uniqueIds = new Set();
+    const cards = raw.cards.map((rawCard, index) => {
+        const label = "Card " + (index + 1);
+        try {
+            if (!rawCard || Array.isArray(rawCard) || typeof rawCard !== "object") {
+                throw new Error("must be an object.");
+            }
+            const question = validatedCardString(rawCard.question, "question", 1200);
+            const answer = validatedCardString(rawCard.answer, "answer", 1000);
+            const cardId = rawCard.id === undefined ? null : validatedCardString(rawCard.id, "id", 100);
+            if (cardId && !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(cardId)) {
+                throw new Error("id contains invalid characters.");
+            }
+            if (cardId && uniqueIds.has(cardId)) throw new Error("id is repeated in this pack.");
+            if (cardId) uniqueIds.add(cardId);
+            const newCard = {
+                question, answer,
+                sourcePackId: packId,
+                ...(cardId ? {sourceCardId: cardId, importKey: packId + ":" + cardId} : {})
+            };
+            for (const field of ["category", "level", "context", "skill", "grammarHint", "writingFunction"]) {
+                const value = optionalCardString(rawCard[field], field, field === "grammarHint" ? 800 : 120);
+                if (value !== undefined) newCard[field] = value;
+            }
+            for (const field of ["grammar", "grammarTags", "writingPatterns", "writingPattern", "vocabulary"]) {
+                const value = optionalCardTags(rawCard[field], field);
+                if (value !== undefined) newCard[field] = value;
+            }
+            for (const field of ["vocabularyNotes", "learningNotes"]) {
+                const value = optionalCardNotes(rawCard[field], field);
+                if (value !== undefined) newCard[field] = value;
+            }
+            if (rawCard.blankTargets !== undefined) {
+                const targets = rawCard.blankTargets;
+                if (!Array.isArray(targets) || targets.length > 30) throw new Error("blankTargets must be an array (up to 30).");
+                const answerWords = answer.split(/\s+/).map(normalizedBlankToken);
+                newCard.blankTargets = targets.map(target => {
+                    if (Number.isInteger(target) && target >= 0 && target < answerWords.length) return target;
+                    if (typeof target === "string" && target.trim() && target.length <= 150) {
+                        const tokens = target.trim().split(/\s+/).map(normalizedBlankToken);
+                        if (tokens.some(token => !token) || !answerWords.some((_, i) =>
+                            i + tokens.length <= answerWords.length && tokens.every((token, j) => token === answerWords[i + j])
+                        )) throw new Error("blankTargets phrase not found in the answer: " + target);
+                        return target.trim();
+                    }
+                    throw new Error("invalid blankTargets item.");
+                });
+            }
+            // Intentionally ignore any supplied stats, review dates or runtime ids.
+            return newCard;
+        } catch (error) {
+            throw new Error(label + ": " + error.message);
+        }
+    });
+    return { id: packId, title, cards };
+}
+
+function classifyNewCards(pack) {
+    const presentPairs = new Set(sentences.map(item => cardIdentity(item.question, item.answer)));
+    const presentKeys = new Set(sentences.map(item => item.importKey).filter(Boolean));
+    const fresh = [], skipped = [];
+    for (const card of pack.cards) {
+        const pair = cardIdentity(card.question, card.answer);
+        if (presentPairs.has(pair) || (card.importKey && presentKeys.has(card.importKey))) {
+            skipped.push(card);
+        } else {
+            fresh.push(card);
+            presentPairs.add(pair);
+            if (card.importKey) presentKeys.add(card.importKey);
+        }
+    }
+    return {fresh, skipped};
+}
+
+function previewCardPackText(text) {
+    const bytes = new Blob([text]).size;
+    if (bytes > CARD_PACK_MAX_BYTES) {
+        cardImportError("Text exceeds the 8 MB limit.");
+        return;
+    }
+    try {
+        const pack = validateCardPack(JSON.parse(text));
+        const selection = classifyNewCards(pack);
+        pendingCardPack = pack;
+        const preview = document.getElementById("cardImportPreview");
+        preview.replaceChildren();
+        const heading = document.createElement("h3");
+        heading.textContent = pack.title;
+        preview.appendChild(heading);
+        const description = document.createElement("p");
+        description.textContent = pack.cards.length + " cards in pack · " + selection.fresh.length +
+            " NEW · " + selection.skipped.length + " duplicate(s) skipped · " + sentences.length + " existing cards untouched.";
+        preview.appendChild(description);
+        const categories = {};
+        for (const card of selection.fresh) categories[card.category || "Uncategorized"] =
+            (categories[card.category || "Uncategorized"] || 0) + 1;
+        const breakdown = document.createElement("p");
+        breakdown.textContent = "New cards by category: " +
+            (Object.entries(categories).map(([category, count]) => category + ": " + count).join(" · ") || "none");
+        preview.appendChild(breakdown);
+        if (selection.fresh.length) {
+            const title = document.createElement("strong");
+            title.textContent = "Sample new cards:";
+            preview.appendChild(title);
+            const list = document.createElement("ul");
+            for (const card of selection.fresh.slice(0, 3)) {
+                const row = document.createElement("li");
+                row.textContent = card.question + " → " + card.answer;
+                list.appendChild(row);
+            }
+            preview.appendChild(list);
+        }
+        preview.style.display = "block";
+        document.getElementById("confirmCardImportButton").disabled = selection.fresh.length === 0;
+        document.getElementById("confirmCardImportButton").textContent =
+            "➕ Add " + selection.fresh.length + " New Cards";
+        document.getElementById("cardImportActions").style.display = "flex";
+        document.getElementById("cardImportMessage").textContent = selection.fresh.length
+            ? "✅ Preview ready. No data has been changed. Confirm to add only new cards."
+            : "ℹ️ Every card is already present. Nothing needs importing.";
+    } catch (error) {
+        cardImportError(error.message || "The card-pack file could not be read.");
+    }
+}
+
+function confirmCardImport() {
+    if (!pendingCardPack) return;
+    const selection = classifyNewCards(pendingCardPack);
+    if (!selection.fresh.length) {
+        document.getElementById("cardImportMessage").textContent = "ℹ️ All cards are already present. Nothing was changed.";
+        document.getElementById("confirmCardImportButton").disabled = true;
+        return;
+    }
+    // New cards start with fresh progress; never trust stats or ids from the pack.
+    const additions = selection.fresh.map(card => {
+        const newSentence = {
+            ...card,
+            id: createSentenceId(),
+            createdAt: new Date().toISOString(),
+            correctCount: 0, wrongCount: 0, shownCount: 0,
+            masteryScore: 20, recentResults: [], interval: 0, reviewCount: 0,
+            lastReviewed: null, nextReview: null
+        };
+        migrateSentence(newSentence);
+        return newSentence;
+    });
+    const before = sentences;
+    try {
+        sentences = [...sentences, ...additions];
+        saveData(); // localStorage.setItem is atomic; if quota fails, restore in-memory cards too.
+    } catch (error) {
+        sentences = before;
+        cardImportError("Storage was unable to save your cards (possibly full). Nothing was imported. Export a backup and free up storage before retrying.");
+        return;
+    }
+    pendingCardPack = null;
+    document.getElementById("confirmCardImportButton").disabled = true;
+    document.getElementById("cardImportActions").style.display = "none";
+    document.getElementById("cardImportPreview").style.display = "none";
+    document.getElementById("cardImportMessage").textContent =
+        "✅ Added " + additions.length + " card(s). Skipped " + selection.skipped.length +
+        " duplicate(s). Existing cards, their progress and study history were preserved.";
+    refreshTodayReviewDisplay();
+    // A new card may be due immediately; leave the current view alone until user navigates.
+}
+
+// ======================================================
+// EXPORT BACKUP
+// ======================================================
+
+function exportBackup() {
+
+    flushStudyClock();
+    let backupData = {
+
+        app:
+            "English Repetition",
+
+        dataVersion:
+            DATA_VERSION,
+
+        exportedAt:
+            new Date()
+                .toISOString(),
+
+        sentenceCount:
+            sentences.length,
+
+        sentences:
+            sentences,
+
+        studyStats:
+            studyStats,
+
+        topicStats:
+            topicStats
+    };
+
+
+    let json =
+
+        JSON.stringify(
+
+            backupData,
+
+            null,
+
+            2
+        );
+
+
+    let blob =
+
+        new Blob(
+
+            [json],
+
+            {
+                type:
+                    "application/json"
+            }
+        );
+
+
+    let url =
+
+        URL.createObjectURL(
+            blob
+        );
+
+
+    let link =
+
+        document.createElement(
+            "a"
+        );
+
+
+    let today =
+
+        new Date()
+            .toISOString()
+            .slice(
+                0,
+                10
+            );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+
+        "english-repetition-backup-" +
+        today +
+        ".json";
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    document.body.removeChild(
+        link
+    );
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+
+    document.getElementById(
+        "backupMessage"
+    ).textContent =
+
+        "✅ Backup exported!";
+}
+
+
+// ======================================================
+// CHOOSE BACKUP FILE
+// ======================================================
+
+function chooseBackupFile() {
+
+    let input =
+
+        document.getElementById(
+            "backupFileInput"
+        );
+
+
+    input.value =
+        "";
+
+
+    input.click();
+}
+
+
+// ======================================================
+// VALIDATE BACKUP
+// ======================================================
+
+function validateBackup(
+    backup
+) {
+
+    if (
+        !backup ||
+        typeof backup !==
+        "object"
+    ) {
+
+        return false;
+    }
+
+
+    if (
+        backup.app !==
+        "English Repetition"
+    ) {
+
+        return false;
+    }
+
+
+    if (
+        typeof backup.dataVersion !==
+        "number"
+    ) {
+
+        return false;
+    }
+
+
+    if (
+        backup.dataVersion >
+        DATA_VERSION
+    ) {
+
+        return false;
+    }
+
+
+    if (
+        !Array.isArray(
+            backup.sentences
+        )
+    ) {
+
+        return false;
+    }
+
+
+    for (
+        let sentence of
+        backup.sentences
+    ) {
+
+        if (
+            !sentence ||
+
+            typeof sentence !==
+            "object"
+        ) {
+
+            return false;
+        }
+
+
+        if (
+            typeof sentence.question !==
+            "string" ||
+
+            typeof sentence.answer !==
+            "string"
+        ) {
+
+            return false;
+        }
+
+
+        if (
+            sentence.question.trim() ===
+            "" ||
+
+            sentence.answer.trim() ===
+            ""
+        ) {
+
+            return false;
+        }
+    }
+
+
+    return true;
+}
+
+
+// ======================================================
+// BACKUP DATE
+// ======================================================
+
+function formatBackupDate(
+    dateString
+) {
+
+    if (
+        !dateString
+    ) {
+
+        return "Unknown";
+    }
+
+
+    let date =
+
+        new Date(
+            dateString
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "Unknown";
+    }
+
+
+    return (
+
+        date.toLocaleDateString() +
+        " " +
+        date.toLocaleTimeString()
+    );
+}
+
+
+// ======================================================
+// IMPORT BACKUP
+// ======================================================
+
+function importBackup(
+    event
+) {
+
+    let file =
+
+        event.target.files[0];
+
+
+    if (!file) {
+
+        return;
+    }
+
+
+    let reader =
+
+        new FileReader();
+
+
+    reader.onload =
+
+        function(
+            loadEvent
+        ) {
+
+            try {
+
+                let backup =
+
+                    JSON.parse(
+
+                        loadEvent
+                            .target
+                            .result
+                    );
+
+
+                if (
+                    !validateBackup(
+                        backup
+                    )
+                ) {
+
+                    alert(
+
+                        "❌ This does not appear to be a valid English Repetition backup."
+                    );
+
+
+                    return;
+                }
+
+
+                let confirmation =
+
+                    confirm(
+
+                        "Import this backup?\n\n" +
+
+                        "Backup date: " +
+
+                        formatBackupDate(
+                            backup.exportedAt
+                        )
+
+                        +
+
+                        "\nSentences in backup: " +
+                        backup.sentences.length
+
+                        +
+
+                        "\nCurrent sentences: " +
+                        sentences.length
+
+                        +
+
+                        "\n\nYour current data will be replaced."
+                    );
+
+
+                if (
+                    !confirmation
+                ) {
+
+                    return;
+                }
+
+
+                sentences =
+
+                    JSON.parse(
+
+                        JSON.stringify(
+                            backup.sentences
+                        )
+                    );
+
+
+                for (
+                    let sentence of sentences
+                ) {
+
+                    migrateSentence(
+                        sentence
+                    );
+                }
+
+
+                saveData();
+
+                // Version 2 backups have no study history: preserve it.
+                // Version 3 backups restore the complete history.
+                if (backup.studyStats && typeof backup.studyStats === "object") {
+                    pauseStudyClock();
+                    studyStats = normalizeStudyStats(backup.studyStats);
+                    saveStudyStats();
+                }
+
+                // Old backups contain no topic history; do not invent past results.
+                topicStats = backup.topicStats && typeof backup.topicStats === "object"
+                    ? normalizeTopicStats(backup.topicStats) : emptyTopicStats();
+                saveTopicStats();
+                recentReviewIds.length = 0;
+                recentReviewTopicGroups.length = 0;
+                recentBlankCardIds.length = 0;
+                recentBlankTags.length = 0;
+
+                currentSentence =
+                    0;
+
+
+                currentSentenceId =
+                    null;
+
+
+                correctScore =
+                    0;
+
+
+                wrongScore =
+                    0;
+
+
+                shownScore =
+                    0;
+
+
+                lastDeletedSentence =
+                    null;
+
+
+                lastDeletedIndex =
+                    null;
+
+
+                document.getElementById(
+                    "undoDeleteArea"
+                ).style.display =
+                    "none";
+
+
+                updateScore();
+
+                showTodayReviews();
+
+
+                document.getElementById(
+                    "backupMessage"
+                ).textContent =
+
+                    "✅ Backup restored!";
+
+
+                alert(
+
+                    "✅ Backup restored successfully!\n\n" +
+
+                    sentences.length +
+
+                    " sentences were imported."
+                );
+
+
+                showReviewMode();
+
+            }
+
+            catch (error) {
+
+                alert(
+
+                    "❌ The backup file could not be read."
+                );
+            }
+        };
+
+
+    reader.onerror =
+
+        function() {
+
+            alert(
+
+                "❌ There was a problem reading the backup file."
+            );
+        };
+
+
+    reader.readAsText(
+        file
+    );
+}
+
+
+// ======================================================
+// START
+// ======================================================
+
+function startApp() {
+
+    showTodayReviews();
+
+    showReviewMode();
+}
+
+
+startApp();
+
+// ======================================================
+// SERVICE WORKER
+// ======================================================
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", function() {
+
+        navigator.serviceWorker
+            .register("./service-worker.js")
+
+            .then(function(registration) {
+
+                console.log(
+                    "Service Worker registered successfully."
+                );
+
+            })
+
+            .catch(function(error) {
+
+                console.error(
+                    "Service Worker registration failed:",
+                    error
+                );
+
+            });
+
+    });
+
+}
+
+</script>
+
+</body>
+
+</html>

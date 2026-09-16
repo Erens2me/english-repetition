@@ -1,4 +1,4 @@
-const CACHE_NAME = "english-repetition-v1";
+const CACHE_NAME = "english-repetition-v2";
 
 const FILES_TO_CACHE = [
     "./",
@@ -15,7 +15,7 @@ self.addEventListener("install", event => {
         caches.open(CACHE_NAME)
             .then(cache => {
 
-                return cache.addAll(FILES_TO_CACHE);
+                return cache.addAll(FILES_TO_CACHE).then(() => self.skipWaiting());
 
             })
     );
@@ -44,7 +44,7 @@ self.addEventListener("activate", event => {
                     })
                 );
 
-            })
+            }).then(() => self.clients.claim())
     );
 
 });

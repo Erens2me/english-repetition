@@ -5910,56 +5910,90 @@ function displayStatistics() {
 
 
 // ======================================================
-// VOICE (ENGLISH VOICES ONLY)
+// VOICE · ANDROID / CHROME SAFE FALLBACK
 // ======================================================
 
+const VOICE_STORAGE_KEY = "englishRepetitionVoiceURI";
 let voices = [];
+let activeSpeech = null;
 
 function hasSpeechSupport() {
     return "speechSynthesis" in window &&
         typeof SpeechSynthesisUtterance !== "undefined";
 }
 
+function isEnglishVoice(voice) {
+    return /^en(?:[-_]|$)/i.test(String(voice.lang || "").trim());
+}
+
 function loadVoices() {
     const voiceSelect = document.getElementById("voiceSelect");
-    const oldChoice = localStorage.getItem("englishRepetitionVoiceURI");
+    const savedChoice = localStorage.getItem(VOICE_STORAGE_KEY);
     voices = hasSpeechSupport() ? window.speechSynthesis.getVoices() : [];
+
     voiceSelect.replaceChildren();
-    let preferred = "";
+
+    // Some Android Chrome versions return an empty voice list even though
+    // speechSynthesis.speak() works. Never disable playback for that reason.
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "default";
+    defaultOption.textContent = "Default English voice";
+    voiceSelect.appendChild(defaultOption);
+
+    let savedIndex = -1;
+    let usIndex = -1;
     voices.forEach((voice, index) => {
-        if (!/^en(?:-|$)/i.test(voice.lang)) return;
+        if (!isEnglishVoice(voice)) return;
         const option = document.createElement("option");
         option.value = String(index);
         option.textContent = voice.name + " (" + voice.lang + ")";
         voiceSelect.appendChild(option);
-        if (voice.voiceURI === oldChoice) preferred = String(index);
-        else if (!preferred && /^en-US$/i.test(voice.lang)) preferred = String(index);
+        if (savedChoice && voice.voiceURI === savedChoice) savedIndex = index;
+        if (usIndex < 0 && /^en[-_]US$/i.test(voice.lang)) usIndex = index;
     });
-    if (!voiceSelect.options.length) {
-        const option = document.createElement("option");
-        option.textContent = "No English voice available";
-        option.value = "";
-        voiceSelect.appendChild(option);
-        voiceSelect.disabled = true;
+
+    // Keep an explicit choice of the browser's default voice; otherwise
+    // restore a previous choice or prefer US English when available.
+    if (savedChoice === "default") {
+        voiceSelect.value = "default";
+    } else if (savedIndex >= 0) {
+        voiceSelect.value = String(savedIndex);
+    } else if (usIndex >= 0) {
+        voiceSelect.value = String(usIndex);
     } else {
-        voiceSelect.disabled = false;
-        if (preferred) voiceSelect.value = preferred;
+        voiceSelect.value = "default";
     }
+    voiceSelect.disabled = !hasSpeechSupport();
 }
 
 if (hasSpeechSupport()) {
-    window.speechSynthesis.addEventListener?.("voiceschanged", loadVoices);
-    // Older browsers expose voiceschanged only through this property.
-    if (!window.speechSynthesis.addEventListener) {
+    if (typeof window.speechSynthesis.addEventListener === "function") {
+        window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    } else {
         window.speechSynthesis.onvoiceschanged = loadVoices;
     }
+
+    // Some mobile voice engines initialize after the page's initial script.
+    // These retries are bounded and never start speech without a user tap.
+    [300, 1200, 3000].forEach(delay => setTimeout(loadVoices, delay));
+    window.addEventListener("pageshow", loadVoices);
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") loadVoices();
+    });
 }
+
 document.getElementById("voiceSelect").addEventListener("change", event => {
-    const chosen = voices[Number(event.target.value)];
-    if (chosen && /^en(?:-|$)/i.test(chosen.lang)) {
-        localStorage.setItem("englishRepetitionVoiceURI", chosen.voiceURI);
+    const value = event.target.value;
+    if (value === "default") {
+        localStorage.setItem(VOICE_STORAGE_KEY, "default");
+        return;
+    }
+    const chosen = voices[Number(value)];
+    if (chosen && isEnglishVoice(chosen)) {
+        localStorage.setItem(VOICE_STORAGE_KEY, chosen.voiceURI);
     }
 });
+
 loadVoices();
 
 function speakEnglishSentence(text) {
@@ -5967,18 +6001,36 @@ function speakEnglishSentence(text) {
         alert("Speech playback is not supported by this browser.");
         return;
     }
+    if (typeof text !== "string" || !text.trim()) return;
+
+    // Refresh voices on the actual button tap, not only during page load.
+    loadVoices();
     const voiceSelect = document.getElementById("voiceSelect");
-    const selected = voiceSelect.disabled ? null : voices[Number(voiceSelect.value)];
-    if (!selected || !/^en(?:-|$)/i.test(selected.lang)) {
-        loadVoices();
-        alert("No English text-to-speech voice is available. Enable an English voice " +
-            "in your device's speech settings and reopen the app.");
-        return;
-    }
+    const value = voiceSelect.value;
+    const chosen = value !== "default" ? voices[Number(value)] : null;
+
     const speech = new SpeechSynthesisUtterance(text);
-    speech.voice = selected;
-    speech.lang = selected.lang;
+    speech.lang = "en-US";
     speech.rate = 0.92;
+
+    // Without an exposed English voice, leave speech.voice unset and let
+    // the browser select its own voice for speech.lang.
+    if (chosen && isEnglishVoice(chosen)) {
+        speech.voice = chosen;
+        speech.lang = chosen.lang.replace("_", "-");
+    }
+
+    activeSpeech = speech;
+    speech.onend = () => {
+        if (activeSpeech === speech) activeSpeech = null;
+    };
+    speech.onerror = event => {
+        if (activeSpeech === speech) activeSpeech = null;
+        if (event.error === "canceled" || event.error === "interrupted") return;
+        console.warn("Speech playback error:", event.error);
+        alert("Audio playback failed. Check Chrome audio settings and try again.");
+    };
+
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(speech);
 }

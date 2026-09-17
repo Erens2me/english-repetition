@@ -9,7 +9,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-<title>English Repetition · v6</title>
+<title>English Repetition · v9</title>
 
 <link rel="manifest" href="./manifest.json">
 
@@ -731,6 +731,27 @@
         .topic-meter > span { display: block; height: 100%; background: var(--primary); }
         .topic-small { color: var(--text-light); font-size: 13px; }
         .topic-empty { padding: 12px; background: var(--surface); border-radius: 9px; }
+
+        /* v9: optional sentence enrollment and adaptive word practice */
+        .daily-count { background:#eef2ff;color:#2148d8;font-weight:700;padding:11px;border-radius:10px; }
+        .manage-settings,.new-sentence-settings {display:grid;gap:10px;padding:12px;margin-top:12px;background:#eef2ff;border-radius:10px;}
+        .manage-settings label,.new-sentence-settings label {display:block;font-size:14px;}
+        .manage-settings input[type="checkbox"],.new-sentence-settings input[type="checkbox"] {width:18px!important;height:18px;min-height:18px;vertical-align:middle;}
+        .manage-pager {display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:10px 0;}
+        .manage-pager button {background:#e9edf4;}
+        .exercise-panel {border:1px solid var(--border);background:var(--surface-soft);padding:16px;border-radius:12px;margin:12px 0;}
+        .exercise-panel input,.exercise-panel textarea,.exercise-panel select {width:100%;margin:5px 0;}
+        .exercise-options {display:grid;gap:8px;margin:12px 0;}
+        .exercise-options button {text-align:left;background:white;color:var(--text);border:1px solid var(--border);}
+        .exercise-options button:disabled {opacity:.8;cursor:default;}
+        .exercise-options button.correct {border-color:var(--success);background:#e3f4e9;}
+        .exercise-options button.incorrect {border-color:var(--danger);background:#ffe6e6;}
+        .exercise-action-row {display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+        .exercise-action-row button {flex:1 1 120px;}
+        .exercise-list-row {border-bottom:1px solid var(--border);padding:10px 0;overflow-wrap:anywhere;}
+        .exercise-list-row:last-child {border-bottom:0;}
+        .exercise-note {font-size:13px;color:var(--text-light);}
+        @media(max-width:520px){.exercise-action-row button{width:100%;}}
     </style>
 </head>
 
@@ -771,6 +792,9 @@
                 ✍️ Practice
             </button>
 
+            <button onclick="showVocabularyMode()">📚 Vocabulary</button>
+            <button onclick="showIrregularMode()">🔁 Irregular Verbs</button>
+            <button onclick="showWritingMode()">🖊️ My Sentences</button>
             <button onclick="showStatisticsMode()">
                 📊 Statistics
             </button>
@@ -900,6 +924,7 @@
             <p id="reviewFilterStatus" class="study-filter-status" role="status" aria-live="polite"></p>
         </section>
 
+        <p id="reviewDailyProgress" class="daily-count"></p>
         <div id="reviewInstruction" class="exercise-label">
             Translate this sentence into English
         </div>
@@ -1019,6 +1044,7 @@
     >
 
         <h2>✍️ Practice</h2>
+        <p id="blankDailyProgress" class="daily-count"></p>
         <section class="study-filter-panel" aria-labelledby="blankFilterTitle">
             <h3 id="blankFilterTitle">🎯 Choose what to practice</h3>
             <p class="study-note">All / Mixed combines everything. Tap one category, then add others to mix them.
@@ -1173,6 +1199,42 @@
     </section>
 
 
+
+    <section id="vocabularyMode" class="card" style="display:none;">
+        <h2>📚 Vocabulary</h2><p id="vocabDailyProgress" class="daily-count"></p>
+        <p class="exercise-note">Learn words AND expressions (e.g. bring up). Multiple choice → type the English; mistakes return sooner.</p>
+        <div id="vocabExercise" class="exercise-panel"></div>
+        <details class="exercise-panel"><summary><strong>➕ Add word / expression</strong></summary>
+          <form id="vocabAddForm" onsubmit="addVocabulary(event)">
+            <label>English word / expression<input id="vocabEnglish" required maxlength="160" placeholder="bring up"></label>
+            <label>Turkish meaning<input id="vocabTurkish" required maxlength="250" placeholder="bir konuyu gündeme getirmek"></label>
+            <label>Type (optional)<select id="vocabType"><option value="general">General / phrase</option><option value="verb">Verb / phrasal verb</option><option value="noun">Noun</option><option value="adjective">Adjective</option><option value="other">Other</option></select></label>
+            <button type="submit" class="primary-button">Add to Vocabulary</button><p id="vocabAddMessage" role="status"></p>
+          </form>
+        </details>
+        <details class="exercise-panel"><summary><strong>Manage Vocabulary</strong></summary><div id="vocabList"></div></details>
+    </section>
+    <section id="irregularMode" class="card" style="display:none;">
+        <h2>🔁 Irregular Verbs</h2><p id="irregularDailyProgress" class="daily-count"></p>
+        <p class="exercise-note">V2 and V3 are independent practice items with independent repetition dates.</p>
+        <div id="irregularExercise" class="exercise-panel"></div>
+        <details class="exercise-panel"><summary><strong>➕ Add irregular verb</strong></summary>
+          <form id="irregularAddForm" onsubmit="addIrregular(event)">
+            <label>V1 · Base form<input id="verbV1" required maxlength="100" placeholder="go"></label>
+            <label>V2 · Past simple<input id="verbV2" maxlength="100" placeholder="went"></label>
+            <label>V3 · Past participle<input id="verbV3" maxlength="100" placeholder="gone"></label>
+            <label class="manage-check"><input id="verbLearnV2" type="checkbox" checked> Ask me for V2 (second form)</label>
+            <label class="manage-check"><input id="verbLearnV3" type="checkbox" checked> Ask me for V3 (third form)</label>
+            <button type="submit" class="primary-button">Add verb</button><p id="irregularAddMessage" role="status"></p>
+          </form>
+        </details>
+        <details class="exercise-panel"><summary><strong>Manage Irregular Verbs</strong></summary><div id="irregularList"></div></details>
+    </section>
+    <section id="writingMode" class="card" style="display:none;">
+        <h2>🖊️ Write Your Own Sentence</h2><p id="writingDailyProgress" class="daily-count"></p>
+        <p class="exercise-note">Use learned words or verb forms with a suitable grammar structure. No automatic grammar score or correction.</p>
+        <div id="writingExercise" class="exercise-panel"></div>
+    </section>
     <!-- ==================================================
          STATISTICS
          ================================================== -->
@@ -1233,6 +1295,7 @@
     >
 
         <h2>📝 Manage Sentences</h2>
+        <p class="study-note">Your library cards are not automatically included in exercises. Choose Review / Fill Blank individually. Mark context questions as score-exempt.</p>
 
         <p id="sentenceCount"></p>
 
@@ -1240,9 +1303,10 @@
             id="searchInput"
             type="text"
             placeholder="Search Turkish or English..."
-            oninput="displaySentenceList()"
+            oninput="resetManagePage()"
         >
 
+        <div id="managePager" class="manage-pager"></div>
         <div id="sentenceList"></div>
 
     </section>
@@ -1384,6 +1448,12 @@
         </div>
 
 
+        <div class="new-sentence-settings">
+            <label>My categories (comma-separated) <input id="newCategories" placeholder="English Context, Academic English"></label>
+            <label><input type="checkbox" id="newInReview"> Include in Review</label>
+            <label><input type="checkbox" id="newInBlank"> Include in Fill Blank</label>
+            <label><input type="checkbox" id="newBlankExempt"> Context question: no mastery penalty</label>
+        </div>
         <div class="button-row">
 
             <button
@@ -1409,7 +1479,7 @@
 // APP VERSION
 // ======================================================
 
-const DATA_VERSION = 8;
+const DATA_VERSION = 9;
 const RECENT_LIMIT = 10;
 
 
@@ -1587,6 +1657,12 @@ function migrateSentence(
     sentence
 ) {
 
+    // Existing and newly imported cards remain in the library until explicitly selected.
+    if (typeof sentence.inReview !== "boolean") sentence.inReview = false;
+    if (typeof sentence.inBlank !== "boolean") sentence.inBlank = false;
+    if (typeof sentence.blankScoreExempt !== "boolean") sentence.blankScoreExempt = false;
+    if (!Array.isArray(sentence.userCategories)) sentence.userCategories = [];
+    sentence.userCategories = sentence.userCategories.filter(x => typeof x === "string" && x.trim()).slice(0, 20);
     if (!sentence.id) {
 
         sentence.id =
@@ -1829,6 +1905,9 @@ function emptyStudyDay() {
         reviewCompleted: 0,
         blankCorrect: 0,
         blankRevealed: 0,
+        vocabCompleted: 0,
+        irregularCompleted: 0,
+        writingCompleted: 0,
         completedMs: 0
     };
 }
@@ -1892,9 +1971,10 @@ function saveStudyStats() {
 
 function isStudyViewVisible() {
     return document.visibilityState === "visible" &&
-        !!currentSentenceId &&
-        (document.getElementById("reviewMode").style.display === "block" ||
-         document.getElementById("blankMode").style.display === "block");
+        ((!!currentSentenceId && (document.getElementById("reviewMode").style.display === "block" ||
+         document.getElementById("blankMode").style.display === "block")) ||
+         (!!currentExerciseId && ["vocabularyMode", "irregularMode", "writingMode"].some(id =>
+             document.getElementById(id).style.display === "block")));
 }
 
 function flushStudyClock(now = Date.now(), allowHidden = false) {
@@ -1903,9 +1983,11 @@ function flushStudyClock(now = Date.now(), allowHidden = false) {
         return;
     }
     const end = Math.min(now, lastStudyActivity + STUDY_IDLE_MS);
-    const studySectionOpen = !!currentSentenceId &&
+    const studySectionOpen = (!!currentSentenceId &&
         (document.getElementById("reviewMode").style.display === "block" ||
-         document.getElementById("blankMode").style.display === "block");
+         document.getElementById("blankMode").style.display === "block")) ||
+         (!!currentExerciseId && ["vocabularyMode", "irregularMode", "writingMode"].some(id =>
+             document.getElementById(id).style.display === "block"));
     if (lastStudyActivity > 0 && studySectionOpen &&
         (allowHidden || document.visibilityState === "visible") &&
         end > studyClockLast) {
@@ -1960,6 +2042,14 @@ function completeStudyExercise(type) {
     day.completedMs += currentExerciseActiveMs;
     currentExerciseCompleted = true;
     saveStudyStats();
+    if (type === "review" || type === "blankCorrect" || type === "blankRevealed") {
+        const key = localDayKey(Date.now());
+        if (!dailyExerciseLog[key]) dailyExerciseLog[key] = {review:[],blank:[]};
+        const mode = type === "review" ? "review" : "blank";
+        if (!dailyExerciseLog[key][mode].includes(currentSentenceId))
+            dailyExerciseLog[key][mode].push(currentSentenceId);
+        saveNewData(); renderDailyCounts();
+    }
 }
 
 function formatStudyDuration(ms) {
@@ -1983,9 +2073,9 @@ function displayStudyStatistics() {
     const allDays = Object.values(studyStats.days);
     const totalTime = allDays.reduce((n, d) => n + d.activeMs, 0);
     const totalCompleted = allDays.reduce((n, d) =>
-        n + d.reviewCompleted + d.blankCorrect + d.blankRevealed, 0);
+        n + d.reviewCompleted + d.blankCorrect + d.blankRevealed + d.vocabCompleted + d.irregularCompleted + d.writingCompleted, 0);
     const todayCompleted = todayData.reviewCompleted +
-        todayData.blankCorrect + todayData.blankRevealed;
+        todayData.blankCorrect + todayData.blankRevealed + todayData.vocabCompleted + todayData.irregularCompleted + todayData.writingCompleted;
     const metrics = document.createElement("div");
     metrics.className = "study-metrics";
     const addMetric = (label, value) => {
@@ -2015,7 +2105,7 @@ function displayStudyStatistics() {
     table.className = "study-history";
     const head = document.createElement("thead");
     const headers = document.createElement("tr");
-    for (const name of ["Day", "Active time", "Review", "Blank ✓", "Revealed", "Completed", "Avg."]) {
+    for (const name of ["Day", "Active time", "Review", "Blank ✓", "Revealed", "Vocabulary", "Irregular", "Writing", "Completed", "Avg."]) {
         const th = document.createElement("th");
         th.textContent = name;
         headers.appendChild(th);
@@ -2029,11 +2119,11 @@ function displayStudyStatistics() {
         date.setDate(date.getDate() - offset);
         const key = localDayKey(date.getTime());
         const d = studyStats.days[key] || emptyStudyDay();
-        const count = d.reviewCompleted + d.blankCorrect + d.blankRevealed;
+        const count = d.reviewCompleted + d.blankCorrect + d.blankRevealed + d.vocabCompleted + d.irregularCompleted + d.writingCompleted;
         const row = document.createElement("tr");
         for (const value of [key, formatStudyDuration(d.activeMs),
             String(d.reviewCompleted), String(d.blankCorrect),
-            String(d.blankRevealed), String(count),
+            String(d.blankRevealed), String(d.vocabCompleted), String(d.irregularCompleted), String(d.writingCompleted), String(count),
             count ? formatStudyDuration(d.completedMs / count) : "—"]) {
             const td = document.createElement("td");
             td.textContent = value;
@@ -2049,7 +2139,7 @@ function displayStudyStatistics() {
     note.textContent = "Time starts with your first interaction in Review/Practice; " +
         "it pauses in background, outside exercises, or after 3 minutes without activity. " +
         "An exercise counts once after a review rating, a correct blank answer, " +
-        "or revealing the blank answer. Skipped questions do not count. " +
+        "or revealing the blank answer; vocabulary, irregular verbs and writing are counted upon completion. Skipped questions do not count. " +
         "Average uses time spent on completed exercises only. " +
         "Statistics are saved on this device.";
     root.appendChild(note);
@@ -2437,6 +2527,7 @@ function applyLearningResult(
     type,
     masteryChange
 ) {
+    if (sentence.blankScoreExempt && ["wrong", "shown", "normalCorrect", "normalPerfect", "fullCorrect", "fullPerfect"].includes(type)) return;
 
     changeMastery(
         sentence,
@@ -2656,6 +2747,7 @@ function isPhraseCard(sentence) {
 }
 function availableStudyCategories() {
     const present = new Set(sentences.map(studyCategoryOf));
+    sentences.forEach(s => (s.userCategories || []).forEach(c => present.add(c.trim().toLowerCase())));
     if (sentences.some(isPhraseCard)) present.add("phrases");
     return [...present].sort((a, b) => {
         const ai = STUDY_CATEGORY_ORDER.indexOf(a), bi = STUDY_CATEGORY_ORDER.indexOf(b);
@@ -2665,6 +2757,7 @@ function availableStudyCategories() {
 function matchesStudyCategory(sentence) {
     if (!studyFilters.categories.size) return true;
     return studyFilters.categories.has(studyCategoryOf(sentence)) ||
+        (sentence.userCategories || []).some(c => studyFilters.categories.has(c.trim().toLowerCase())) ||
         (studyFilters.categories.has("phrases") && isPhraseCard(sentence));
 }
 function matchesStudyLevel(sentence) {
@@ -2684,7 +2777,8 @@ function matchingStudyIndices(mode) {
     const dueOnly = mode === "review" && !studyFilters.reviewIncludeAll;
     const indexes = [];
     sentences.forEach((sentence, index) => {
-        if (matchesStudyCard(sentence) && (!dueOnly || isDue(sentence))) indexes.push(index);
+        if (matchesStudyCard(sentence) && (mode === "review" ? sentence.inReview : sentence.inBlank) &&
+            (!dueOnly || isDue(sentence))) indexes.push(index);
     });
     return indexes;
 }
@@ -2749,12 +2843,12 @@ function refreshStudyFiltersAndExercise() {
 function renderStudyFilters() {
     const categories = availableStudyCategories();
     const totals = new Map(categories.map(name => [name, sentences.filter(sentence =>
-        name === "phrases" ? isPhraseCard(sentence) : studyCategoryOf(sentence) === name).length]));
+        name === "phrases" ? isPhraseCard(sentence) : (studyCategoryOf(sentence) === name || (sentence.userCategories || []).some(c=>c.trim().toLowerCase()===name))).length]));
     const topics = availableStudyTopics();
     const query = canonicalTopic(studyFilters.search);
     const filteredTopics = query ? topics.filter(([tag]) => tag.includes(query)) : topics;
     const matching = sentences.filter(sentence => matchesStudyCard(sentence));
-    const due = matching.filter(isDue).length;
+    const due = matching.filter(sentence => sentence.inReview && isDue(sentence)).length;
     for (const mode of ["review", "blank"]) {
         const chips = document.getElementById(mode + "CategoryChips");
         if (!chips) continue;
@@ -2800,7 +2894,8 @@ function renderStudyFilters() {
         const check = document.getElementById("reviewIncludeAll");
         if (mode === "review" && check) check.checked = studyFilters.reviewIncludeAll;
         const status = document.getElementById(mode + "FilterStatus");
-        const available = mode === "review" && !studyFilters.reviewIncludeAll ? due : matching.length;
+        const enabled = matching.filter(s => mode === "review" ? s.inReview : s.inBlank).length;
+        const available = mode === "review" && !studyFilters.reviewIncludeAll ? due : enabled;
         status.textContent = matching.length + " matching card(s) · " + due + " due · " +
             available + " available in " + (mode === "review" ? "Review" : "Fill Blank") +
             (studyFilters.kind !== "none" ? " · " + topics.length + " topics" +
@@ -2861,6 +2956,9 @@ function hideAllModes() {
         "none";
 
     document.getElementById("cardImportMode").style.display = "none";
+    for (const id of ["vocabularyMode", "irregularMode", "writingMode"]) {
+        document.getElementById(id).style.display = "none";
+    }
 }
 
 
@@ -2879,6 +2977,7 @@ function showReviewMode() {
         "block";
 
     renderStudyFilters();
+    renderDailyCounts();
 
     if (
         sentences.length === 0
@@ -2935,6 +3034,7 @@ function showBlankMode() {
         "block";
 
     renderStudyFilters();
+    renderDailyCounts();
 
     if (
         sentences.length === 0
@@ -3070,7 +3170,7 @@ function countDueReviews() {
     return sentences
 
         .filter(
-            isDue
+            sentence => sentence.inReview && isDue(sentence)
         )
 
         .length;
@@ -3799,8 +3899,13 @@ function addSentence() {
         lastReviewed:
             null,
 
-        nextReview:
-            null
+        nextReview: null,
+        inReview: document.getElementById("newInReview").checked,
+        inBlank: document.getElementById("newInBlank").checked,
+        blankScoreExempt: document.getElementById("newBlankExempt").checked ||
+            parseUserCategories(document.getElementById("newCategories").value)
+                .some(c => c.toLowerCase() === "english context"),
+        userCategories: parseUserCategories(document.getElementById("newCategories").value)
     });
 
 
@@ -3827,6 +3932,11 @@ function addSentence() {
 
 
     refreshTodayReviewDisplay();
+    document.getElementById("newCategories").value = "";
+    document.getElementById("newInReview").checked = false;
+    document.getElementById("newInBlank").checked = false;
+    document.getElementById("newBlankExempt").checked = false;
+    invalidateDailyBlankPlan(); renderDailyCounts();
 }
 
 
@@ -4099,6 +4209,7 @@ function updateBlankDifficultyInfo() {
     const sentence = sentences[currentSentence];
     const tags = getLearningTags(sentence);
     document.getElementById("blankDifficultyInfo").textContent =
+        (sentence.blankScoreExempt ? "🛡 Context · no mastery penalty | " : "") +
         (fullChallenge ? "🔥 Full sentence · all words hidden" :
             "Adaptive challenge · " + blankIndexes.length + " blank(s)") +
         " | Mastery: " + getEffectiveMastery(sentence) + "%" +
@@ -4471,12 +4582,12 @@ function checkBlank() {
         const quality = blankHadWrongAttempt ? 0.2 :
             blankHintLevel === 0 ? 1 : blankHintLevel === 1 ? 0.72 :
             blankHintLevel === 2 ? 0.48 : 0.28;
-        recordTopicOutcome(sentence, quality);
+        if (!sentence.blankScoreExempt) recordTopicOutcome(sentence, quality);
 
         correctScore++;
 
 
-        sentence.correctCount++;
+        if (!sentence.blankScoreExempt) sentence.correctCount++;
 
 
         saveData();
@@ -4514,7 +4625,7 @@ function checkBlank() {
             wrongScore++;
 
 
-            sentence.wrongCount++;
+            if (!sentence.blankScoreExempt) sentence.wrongCount++;
 
 
             applyLearningResult(
@@ -4581,7 +4692,7 @@ function showBlankAnswer() {
         shownScore++;
 
 
-        sentence.shownCount++;
+        if (!sentence.blankScoreExempt) sentence.shownCount++;
 
 
         applyLearningResult(
@@ -4612,7 +4723,7 @@ function showBlankAnswer() {
     blankFinished =
         true;
 
-    recordTopicOutcome(sentence, 0);
+    if (!sentence.blankScoreExempt) recordTopicOutcome(sentence, 0);
     completeStudyExercise("blankRevealed");
     document.getElementById("blankListenButton").style.display = "inline-block";
     revealBlankModelAnswer(sentence);
@@ -5199,6 +5310,33 @@ function deleteCurrentSentence() {
 // MANAGE LIST
 // ======================================================
 
+let managePage = 0;
+const MANAGE_PAGE_SIZE = 25;
+function resetManagePage() { managePage = 0; displaySentenceList(); }
+function changeManagePage(delta) { managePage += delta; displaySentenceList(); }
+function parseUserCategories(raw) {
+    return [...new Set(String(raw || "").split(",").map(v => v.trim()).filter(Boolean))].slice(0,20);
+}
+function saveSentenceSettings(id) {
+    const sentence = sentences.find(s => s.id === id);
+    if (!sentence) return;
+    sentence.inReview = document.getElementById("reviewToggle_" + id).checked;
+    sentence.inBlank = document.getElementById("blankToggle_" + id).checked;
+    sentence.userCategories = parseUserCategories(document.getElementById("userTags_" + id).value);
+    const context = sentence.userCategories.some(v => v.toLowerCase() === "english context");
+    sentence.blankScoreExempt = context || document.getElementById("exemptToggle_" + id).checked;
+    saveData(); invalidateDailyBlankPlan(); refreshTodayReviewDisplay(); renderDailyCounts(); renderStudyFilters();
+    const status = document.getElementById("manageSettingsStatus_" + id);
+    if (status) status.textContent = "Saved ✓";
+}
+function createManageCheckbox(id, name, checked, label) {
+    const outer = document.createElement("label");
+    outer.className = "manage-check";
+    const input = document.createElement("input");
+    input.type = "checkbox"; input.id = name + id; input.checked = checked;
+    outer.append(input, document.createTextNode(" " + label));
+    return outer;
+}
 function displaySentenceList() {
 
     let search =
@@ -5244,8 +5382,25 @@ function displaySentenceList() {
     }
 
 
-    let found =
-        0;
+    const matched = sentences.map((card, index) => ({card,index})).filter(({card}) =>
+        [card.question, card.answer, studyCategoryOf(card), ...(card.userCategories || [])]
+            .join(" ").toLowerCase().includes(search));
+    const pages = Math.max(1, Math.ceil(matched.length / MANAGE_PAGE_SIZE));
+    managePage = Math.max(0, Math.min(managePage, pages - 1));
+    const pageIds = new Set(matched.slice(managePage * MANAGE_PAGE_SIZE,
+        (managePage + 1) * MANAGE_PAGE_SIZE).map(({index}) => index));
+    const pager = document.getElementById("managePager");
+    pager.replaceChildren();
+    const previous = document.createElement("button");
+    previous.textContent = "← Previous"; previous.disabled = managePage === 0;
+    previous.onclick = () => changeManagePage(-1);
+    const status = document.createElement("span");
+    status.textContent = matched.length + " matched · page " + (managePage+1) + "/" + pages;
+    const next = document.createElement("button");
+    next.textContent = "Next →"; next.disabled = managePage >= pages - 1;
+    next.onclick = () => changeManagePage(1);
+    pager.append(previous, status, next);
+    let found = 0;
 
 
     for (
@@ -5254,31 +5409,12 @@ function displaySentenceList() {
         i++
     ) {
 
+        if (!pageIds.has(i)) continue;
         let sentence =
             sentences[i];
 
 
-        let searchable =
 
-            (
-                sentence.question +
-                " " +
-                sentence.answer
-            )
-
-            .toLowerCase();
-
-
-        if (
-            search !== "" &&
-
-            !searchable.includes(
-                search
-            )
-        ) {
-
-            continue;
-        }
 
 
         found++;
@@ -5488,6 +5624,26 @@ function displaySentenceList() {
         );
 
 
+        const settings = document.createElement("div");
+        settings.className = "manage-settings";
+        const categoryLabel = document.createElement("label");
+        categoryLabel.textContent = "My categories (comma separated, e.g. English Context, Academic English)";
+        const categoryInput = document.createElement("input");
+        categoryInput.id = "userTags_" + sentence.id;
+        categoryInput.value = (sentence.userCategories || []).join(", ");
+        categoryLabel.appendChild(categoryInput);
+        settings.append(categoryLabel,
+            createManageCheckbox(sentence.id,"reviewToggle_",sentence.inReview,"Include in Review"),
+            createManageCheckbox(sentence.id,"blankToggle_",sentence.inBlank,"Include in Fill Blank"),
+            createManageCheckbox(sentence.id,"exemptToggle_",sentence.blankScoreExempt,"Context question: don't affect mastery / topic stats"));
+        const saveSettings = document.createElement("button");
+        saveSettings.className = "primary-button";
+        saveSettings.textContent = "Save categories & exercises";
+        saveSettings.onclick = () => saveSentenceSettings(sentence.id);
+        const settingsStatus = document.createElement("span");
+        settingsStatus.id = "manageSettingsStatus_" + sentence.id;
+        settings.append(saveSettings, settingsStatus);
+        wrapper.appendChild(settings);
         container.appendChild(
             wrapper
         );
@@ -6291,7 +6447,8 @@ function confirmCardImport() {
             createdAt: new Date().toISOString(),
             correctCount: 0, wrongCount: 0, shownCount: 0,
             masteryScore: 20, recentResults: [], interval: 0, reviewCount: 0,
-            lastReviewed: null, nextReview: null
+            lastReviewed: null, nextReview: null,
+            inReview: false, inBlank: false, blankScoreExempt: false, userCategories: []
         };
         migrateSentence(newSentence);
         return newSentence;
@@ -6344,8 +6501,11 @@ function exportBackup() {
         studyStats:
             studyStats,
 
-        topicStats:
-            topicStats
+        topicStats: topicStats,
+        vocabularyItems: vocabularyItems,
+        irregularItems: irregularItems,
+        writingHistory: writingHistory,
+        dailyExerciseLog: dailyExerciseLog
     };
 
 
@@ -6726,6 +6886,11 @@ function importBackup(
                 topicStats = backup.topicStats && typeof backup.topicStats === "object"
                     ? normalizeTopicStats(backup.topicStats) : emptyTopicStats();
                 saveTopicStats();
+                vocabularyItems = normalizeVocabularyItems(backup.vocabularyItems || []);
+                irregularItems = normalizeIrregularItems(backup.irregularItems || []);
+                writingHistory = normalizeWritingHistory(backup.writingHistory || {});
+                dailyExerciseLog = normalizeDailyExerciseLog(backup.dailyExerciseLog || {});
+                saveNewData(); invalidateDailyBlankPlan();
                 recentReviewIds.length = 0;
                 recentReviewTopicGroups.length = 0;
                 recentBlankCardIds.length = 0;
@@ -6817,6 +6982,495 @@ function importBackup(
     );
 }
 
+
+// ======================================================
+// V9 · INDEPENDENT VOCABULARY / VERB / WRITING MODULES
+// ======================================================
+const VOCAB_STORAGE_KEY = "englishRepetitionVocabularyV1";
+const IRREGULAR_STORAGE_KEY = "englishRepetitionIrregularV1";
+const WRITING_STORAGE_KEY = "englishRepetitionWritingV1";
+const DAILY_LOG_KEY = "englishRepetitionDailyExerciseLogV1";
+// Previous 10-card quota retired: Fill in the Blank now has no daily limit.
+const WRITING_DAILY_LIMIT = 3;
+const PRACTICE_INTERVALS = [1, 3, 7, 14, 30, 60];
+const WORD_DISTRACTORS = ["başarmak", "kaçınmak", "geliştirmek", "gerektirmek", "karşılaştırmak",
+    "gündeme getirmek", "fark etmek", "cihaz", "fırsat", "tahmin etmek", "hatırlamak", "göz önünde bulundurmak",
+    "artırmak", "azaltmak", "sağlamak", "açıklamak", "yönetmek", "desteklemek"];
+const VERB_DISTRACTORS = {
+    v2: ["went", "saw", "took", "wrote", "spoke", "bought", "gave", "made", "found", "ate", "broke", "chose", "came", "did"],
+    v3: ["gone", "seen", "taken", "written", "spoken", "bought", "given", "made", "found", "eaten", "broken", "chosen", "come", "done"]
+};
+function safeRead(key, fallback) {
+    try { const item = JSON.parse(localStorage.getItem(key) || "null"); return item === null ? fallback : item; }
+    catch (error) { console.warn("Cannot read " + key, error); return fallback; }
+}
+function todayKey() { return localDayKey(Date.now()); }
+function dayAfter(days) { const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+days); return localDayKey(d.getTime()); }
+function newProgress() { return {stage:"choice",streak:0,wrong:0,step:0,dueDay:todayKey(),completed:0}; }
+function normalizeProgress(value) {
+    const result = {...newProgress(), ...(value && typeof value === "object" ? value : {})};
+    result.stage = result.stage === "typing" ? "typing" : "choice";
+    result.streak = Math.max(0, Number(result.streak) || 0);
+    result.wrong = Math.max(0, Number(result.wrong) || 0);
+    result.step = Math.max(0, Math.min(PRACTICE_INTERVALS.length - 1, Number(result.step) || 0));
+    result.completed = Math.max(0, Number(result.completed) || 0);
+    result.dueDay = /^\d{4}-\d{2}-\d{2}$/.test(result.dueDay) ? result.dueDay : todayKey();
+    return result;
+}
+function normalizeVocabularyItems(items) {
+    if (!Array.isArray(items)) return [];
+    return items.filter(item => item && typeof item.english === "string" && typeof item.turkish === "string")
+        .slice(0,5000).map(item => ({id: String(item.id || createSentenceId()),
+            english:item.english.trim(), turkish:item.turkish.trim(),
+            wordType:["verb","noun","adjective","other"].includes(item.wordType) ? item.wordType : "general",
+            progress:normalizeProgress(item.progress)})).filter(item => item.english && item.turkish);
+}
+function normalizeIrregularItems(items) {
+    if (!Array.isArray(items)) return [];
+    return items.filter(item => item && typeof item.v1 === "string").slice(0,2000)
+        .map(item => ({id:String(item.id || createSentenceId()), v1:item.v1.trim(),
+            v2:String(item.v2 || "").trim(), v3:String(item.v3 || "").trim(),
+            enabledV2:!!item.enabledV2 && !!String(item.v2 || "").trim(),
+            enabledV3:!!item.enabledV3 && !!String(item.v3 || "").trim(),
+            forms:{v2:normalizeProgress(item.forms && item.forms.v2),
+                v3:normalizeProgress(item.forms && item.forms.v3)}})).filter(item => item.v1 && (item.enabledV2 || item.enabledV3));
+}
+function normalizeWritingHistory(value) { return value && typeof value === "object" && !Array.isArray(value) ? value : {}; }
+function normalizeDailyExerciseLog(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    const cleaned = {};
+    for (const [day, entry] of Object.entries(value)) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !entry || typeof entry !== "object") continue;
+        cleaned[day] = {};
+        for (const field of ["review","blank","blankPlan","vocab","irregular","writing","writingPlan"])
+            cleaned[day][field] = Array.isArray(entry[field]) ? entry[field].filter(v=>typeof v === "string").slice(0,5000) : [];
+    }
+    return cleaned;
+}
+let vocabularyItems = normalizeVocabularyItems(safeRead(VOCAB_STORAGE_KEY, []));
+let irregularItems = normalizeIrregularItems(safeRead(IRREGULAR_STORAGE_KEY, []));
+let writingHistory = normalizeWritingHistory(safeRead(WRITING_STORAGE_KEY, {}));
+let dailyExerciseLog = normalizeDailyExerciseLog(safeRead(DAILY_LOG_KEY, {}));
+let activeDrill = null;
+let activeWriting = null;
+function saveNewData() {
+    try {
+        localStorage.setItem(VOCAB_STORAGE_KEY, JSON.stringify(vocabularyItems));
+        localStorage.setItem(IRREGULAR_STORAGE_KEY, JSON.stringify(irregularItems));
+        localStorage.setItem(WRITING_STORAGE_KEY, JSON.stringify(writingHistory));
+        localStorage.setItem(DAILY_LOG_KEY, JSON.stringify(dailyExerciseLog));
+        return true;
+    } catch (error) {
+        console.error("Storage full or unavailable:", error);
+        alert("Cannot save your new progress. Export a backup and check available browser storage.");
+        return false;
+    }
+}
+function dayLog() {
+    const key = todayKey();
+    if (!dailyExerciseLog[key]) dailyExerciseLog[key] = {review:[],blank:[],blankPlan:[],vocab:[],irregular:[],writing:[],writingPlan:[]};
+    const log = dailyExerciseLog[key];
+    for (const field of ["review","blank","blankPlan","vocab","irregular","writing","writingPlan"])
+        if (!Array.isArray(log[field])) log[field] = [];
+    return log;
+}
+function deterministicRank(id) {
+    const text = todayKey() + ":" + id;
+    let value = 2166136261;
+    for (const c of text) value = Math.imul(value ^ c.charCodeAt(0),16777619);
+    return (value >>> 0) / 4294967295;
+}
+let blankPlanCache = null;
+function getDailyBlankPlan() {
+    if (blankPlanCache && blankPlanCache.day === todayKey()) return blankPlanCache.ids;
+    const log = dayLog();
+    const enabled = sentences.filter(s=>s.inBlank);
+    const valid = new Set(enabled.map(s=>s.id));
+    log.blankPlan = log.blankPlan.filter(id=>valid.has(id));
+    const remaining = enabled.filter(s=>!log.blankPlan.includes(s.id)).sort((a,b)=>
+        (getEffectiveMastery(a) - getEffectiveMastery(b)) + (deterministicRank(a.id)-deterministicRank(b.id))*20);
+    for (const item of remaining) {
+        if (log.blankPlan.length >= BLANK_DAILY_LIMIT) break;
+        log.blankPlan.push(item.id);
+    }
+    blankPlanCache = {day:todayKey(),ids:log.blankPlan};
+    saveNewData();
+    return log.blankPlan;
+}
+function isPlannedBlank(sentence) { return getDailyBlankPlan().includes(sentence.id) && !dayLog().blank.includes(sentence.id); }
+function invalidateDailyBlankPlan(){blankPlanCache=null;}
+function countDueNew(items) { return items.filter(item => item.progress.dueDay <= todayKey()); }
+function allIrregularForms() {
+    return irregularItems.flatMap(item => ["v2","v3"].filter(form => item["enabled" + form.toUpperCase()])
+        .map(form => ({id:item.id + ":" + form, item, form, progress:item.forms[form]})));
+}
+function countNewProgress(items, done, field) {
+    return {done:done.filter(id=>items.some(x=>x.id===id)).length,
+        remaining:items.filter(item=>item.progress.dueDay <= todayKey() && !done.includes(item.id)).length};
+}
+function displayNewProgress(elementId, done, remaining, label) {
+    const el = document.getElementById(elementId);
+    if (el) el.textContent = label + " · " + done + " / " + (done + remaining) + " completed · " + remaining + " remaining today";
+}
+function renderDailyCounts() {
+    const log = dayLog();
+    const reviewIds = new Set(sentences.filter(s=>s.inReview).map(s=>s.id));
+    const reviewDone = log.review.filter(id=>reviewIds.has(id)).length;
+    const reviewRemaining = sentences.filter(s=>s.inReview && isDue(s) && !log.review.includes(s.id)).length;
+    displayNewProgress("reviewDailyProgress", reviewDone, reviewRemaining, "Review");
+    // Informational only: no daily quota or forced stopping for Fill in the Blank.
+    const blankCompletedToday = log.blank.filter(id =>
+        sentences.some(s => s.id === id && s.inBlank)).length;
+    const blankCount = document.getElementById("blankDailyProgress");
+    if (blankCount) blankCount.textContent = "Fill in the Blank · " +
+        blankCompletedToday + " different sentences completed today · No daily limit";
+    const vocab = countNewProgress(vocabularyItems,log.vocab,"vocab");
+    displayNewProgress("vocabDailyProgress",vocab.done,vocab.remaining,"Vocabulary");
+    const verbs = countNewProgress(allIrregularForms(),log.irregular,"irregular");
+    displayNewProgress("irregularDailyProgress",verbs.done,verbs.remaining,"Irregular Verbs");
+    const writingPlan = ensureWritingPlan();
+    const writingDone = writingPlan.filter(id=>log.writing.includes(id)).length;
+    displayNewProgress("writingDailyProgress",writingDone,writingPlan.length-writingDone,"Write Your Own Sentence");
+}
+function startNewStudyExercise(kind,id) {
+    flushStudyClock(); currentExerciseType=kind; currentExerciseId=id;
+    currentExerciseCompleted=false; currentExerciseActiveMs=0;
+}
+function finishNewStudyExercise(kind,id) {
+    flushStudyClock();
+    if (currentExerciseCompleted || currentExerciseId!==id) return;
+    currentExerciseCompleted=true;
+    const day = studyDay(todayKey());
+    const field = {vocab:"vocabCompleted",irregular:"irregularCompleted",writing:"writingCompleted"}[kind];
+    if (field) day[field] = (Number(day[field]) || 0) + 1;
+    day.completedMs += currentExerciseActiveMs;
+    saveStudyStats();
+    if (!dayLog()[kind].includes(id)) dayLog()[kind].push(id);
+    saveNewData(); renderDailyCounts();
+}
+function makeNode(tag,text,cssClass) {
+    const el = document.createElement(tag);
+    if (text !== undefined && text !== null) el.textContent=String(text);
+    if (cssClass) el.className=cssClass;
+    return el;
+}
+function showVocabularyMode() { hideAllModes(); document.getElementById("vocabularyMode").style.display="block";
+    activeDrill=null; nextDrill("vocab"); renderVocabularyList(); renderDailyCounts(); }
+function showIrregularMode() { hideAllModes(); document.getElementById("irregularMode").style.display="block";
+    activeDrill=null; nextDrill("irregular"); renderIrregularList(); renderDailyCounts(); }
+function getDrillCandidates(kind) {
+    const log=dayLog();
+    const items=kind==="vocab" ? vocabularyItems.map(item=>({id:item.id,item,form:null,progress:item.progress})) : allIrregularForms();
+    return items.filter(item=>item.progress.dueDay<=todayKey() && !log[kind].includes(item.id));
+}
+function nextDrill(kind) {
+    const el=document.getElementById(kind==="vocab"?"vocabExercise":"irregularExercise");
+    const candidates=getDrillCandidates(kind).sort((a,b)=>a.progress.dueDay.localeCompare(b.progress.dueDay) ||
+        a.progress.streak-b.progress.streak || deterministicRank(a.id)-deterministicRank(b.id));
+    activeDrill=candidates.length?{kind,...candidates[0],revealed:false,selected:null}:null;
+    if (!activeDrill) {currentExerciseId=null;el.replaceChildren(makeNode("p", "✅ No more " +
+        (kind==="vocab"?"vocabulary":"irregular verb") + " exercises due today. Add items to start."));}
+    else {startNewStudyExercise(kind,activeDrill.id); renderDrill();}
+    renderDailyCounts();
+}
+function drillAnswer(d) {return d.kind==="vocab"?d.item.english:d.item[d.form];}
+function drillPrompt(d) {return d.kind==="vocab"?d.item.turkish:d.item.v1;}
+function shuffleOptions(items) {
+    const values=items.slice();
+    for(let i=values.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[values[i],values[j]]=[values[j],values[i]];}
+    return values;
+}
+function drillOptions(d) {
+    const correct=d.kind==="vocab"?d.item.turkish:d.item[d.form];
+    const pool=d.kind==="vocab"?[
+        ...vocabularyItems.filter(v=>v.id!==d.item.id).map(v=>v.turkish),...WORD_DISTRACTORS]
+        :[...irregularItems.filter(v=>v.id!==d.item.id).map(v=>v[d.form]),...VERB_DISTRACTORS[d.form]];
+    const unique=[...new Map(pool.filter(v=>typeof v==="string" && v.trim() && v.toLocaleLowerCase("tr")!==correct.toLocaleLowerCase("tr"))
+        .map(v=>[v.toLocaleLowerCase("tr"),v])).values()];
+    return shuffleOptions([correct,...shuffleOptions(unique).slice(0,3)]);
+}
+function normalizedAnswer(value) {
+    return String(value||"").trim().toLocaleLowerCase("en").replace(/[’]/g,"'").replace(/\s+/g," ");
+}
+function acceptedTypedAnswer(value,correct) {
+    return correct.split(/[\/;,]/).some(choice=>normalizedAnswer(value)===normalizedAnswer(choice));
+}
+function renderDrill() {
+    if(!activeDrill)return;
+    const d=activeDrill,root=document.getElementById(d.kind==="vocab"?"vocabExercise":"irregularExercise");
+    root.replaceChildren();
+    const stage=d.progress.stage;
+    root.append(makeNode("p",d.kind==="vocab"?"Vocabulary · "+(stage==="choice"?"Choose the meaning":"Type the English expression")
+        :"Irregular Verbs · "+d.form.toUpperCase()+" · "+(stage==="choice"?"Multiple Choice":"Type the form"),"exercise-note"));
+    root.append(makeNode("h3",d.kind==="vocab"?(stage==="choice"?d.item.english:d.item.turkish)
+        :"What is the "+d.form.toUpperCase()+" form of ‘"+d.item.v1+"’?"));
+    if(d.kind==="irregular") root.append(makeNode("p", d.form==="v2"?"V2 = Past Simple (second form)":"V3 = Past Participle (third form)","exercise-note"));
+    if(d.revealed){
+        root.append(makeNode("p",d.selected===true?"✅ Correct!":"Answer: "+drillAnswer(d),"answer-text"));
+        if(d.kind==="irregular") root.append(makeNode("p",[d.item.v1,d.item.v2||"—",d.item.v3||"—"].join(" → ")));
+        const row=makeNode("div",null,"exercise-action-row");
+        const listen=makeNode("button","🔊 Listen","secondary-button");listen.onclick=()=>speakEnglishSentence(drillAnswer(d));
+        const next=makeNode("button","Next →","primary-button");next.onclick=()=>nextDrill(d.kind);
+        row.append(listen,next);root.append(row);return;
+    }
+    if(stage==="choice"){
+        const answers=makeNode("div",null,"exercise-options");
+        for(const answer of drillOptions(d)){
+            const button=makeNode("button",answer);button.type="button";
+            button.onclick=()=>answerDrillChoice(answer);answers.append(button);
+        }
+        root.append(answers);
+    }else{
+        const form=makeNode("form");
+        const input=makeNode("input"); input.type="text";input.required=true;input.autocomplete="off";
+        input.placeholder=d.kind==="vocab"?"Write the English word / phrase...":"Write "+d.form.toUpperCase()+"...";
+        const submit=makeNode("button","Check answer","primary-button");submit.type="submit";
+        form.onsubmit=event=>{event.preventDefault();answerDrillTyped(input.value);};
+        form.append(input,submit);root.append(form);
+    }
+    root.append(makeNode("p","Listen appears after answering, so it cannot reveal the answer.","exercise-note"));
+}
+function answerDrillChoice(answer) {
+    const d=activeDrill;if(!d||d.revealed||d.progress.stage!=="choice")return;
+    const correct=d.kind==="vocab"?d.item.turkish:d.item[d.form];
+    if(normalizedAnswer(answer)===normalizedAnswer(correct)){
+        d.progress.stage="typing";d.progress.wrong=0;
+        saveNewData();renderDrill();
+        const note=makeNode("p","✅ Correct choice! Now type the answer yourself.","exercise-note");
+        document.getElementById(d.kind==="vocab"?"vocabExercise":"irregularExercise").append(note);
+    }else{
+        completeDrill(false);
+    }
+}
+function answerDrillTyped(answer) {
+    const d=activeDrill;if(!d||d.revealed||d.progress.stage!=="typing")return;
+    completeDrill(acceptedTypedAnswer(answer,drillAnswer(d)));
+}
+function completeDrill(correct) {
+    const d=activeDrill;if(!d||d.revealed)return;
+    if(correct){
+        d.progress.streak++;
+        d.progress.wrong=0;
+        d.progress.completed++;
+        d.progress.step=Math.min(d.progress.step+1,PRACTICE_INTERVALS.length-1);
+        d.progress.dueDay=dayAfter(PRACTICE_INTERVALS[Math.max(0,d.progress.step-1)]);
+        unlockWriting(d);
+    }else{
+        d.progress.wrong++;
+        d.progress.streak=0;d.progress.step=0;
+        // One MC error does not erase a typing-stage skill; repeated typing errors may reintroduce MC.
+        if(d.progress.stage==="typing" && d.progress.wrong>=3)d.progress.stage="choice";
+        d.progress.dueDay=dayAfter(1);
+    }
+    d.revealed=true;d.selected=correct;
+    finishNewStudyExercise(d.kind,d.id);
+    saveNewData();renderDrill();renderDailyCounts();
+}
+function addVocabulary(event){
+    event.preventDefault();
+    const english=document.getElementById("vocabEnglish").value.trim();
+    const turkish=document.getElementById("vocabTurkish").value.trim();
+    const feedback=document.getElementById("vocabAddMessage");
+    if(!english||!turkish)return;
+    if(vocabularyItems.some(v=>normalizedAnswer(v.english)===normalizedAnswer(english)&&normalizedAnswer(v.turkish)===normalizedAnswer(turkish))){
+        feedback.textContent="This word + meaning already exists.";return;
+    }
+    vocabularyItems.push({id:createSentenceId(),english,turkish,
+        wordType:document.getElementById("vocabType").value,progress:newProgress()});
+    if(saveNewData()){event.target.reset();feedback.textContent="✅ Added. Today's exercise total has increased.";}
+    renderVocabularyList();renderDailyCounts();
+    if(document.getElementById("vocabularyMode").style.display==="block"&&!activeDrill)nextDrill("vocab");
+}
+function renderVocabularyList(){
+    const root=document.getElementById("vocabList");root.replaceChildren();
+    root.append(makeNode("p",vocabularyItems.length+" saved words / expressions","exercise-note"));
+    for(const item of vocabularyItems){
+        const row=makeNode("div",null,"exercise-list-row");
+        row.append(makeNode("strong",item.english+" — "+item.turkish),
+            makeNode("p",item.progress.stage+" · next: "+item.progress.dueDay,"exercise-note"));
+        const remove=makeNode("button","Delete","danger-button");
+        remove.onclick=()=>{
+            if(!confirm("Delete this vocabulary item?"))return;
+            vocabularyItems=vocabularyItems.filter(v=>v.id!==item.id);delete writingHistory["v:"+item.id];
+            saveNewData();renderVocabularyList();nextDrill("vocab");renderDailyCounts();
+        };
+        row.append(remove);root.append(row);
+    }
+}
+function addIrregular(event){
+    event.preventDefault();const v1=document.getElementById("verbV1").value.trim();
+    const v2=document.getElementById("verbV2").value.trim(),v3=document.getElementById("verbV3").value.trim();
+    const enabledV2=document.getElementById("verbLearnV2").checked,enabledV3=document.getElementById("verbLearnV3").checked;
+    const feedback=document.getElementById("irregularAddMessage");
+    if(!v1||(enabledV2&&!v2)||(enabledV3&&!v3)||(!enabledV2&&!enabledV3)){
+        feedback.textContent="Select V2 and/or V3 and enter each selected form.";return;
+    }
+    if(irregularItems.some(v=>normalizedAnswer(v.v1)===normalizedAnswer(v1))){
+        feedback.textContent="This base verb is already saved. Delete it first if you need to replace it.";return;
+    }
+    irregularItems.push({id:createSentenceId(),v1,v2,v3,enabledV2,enabledV3,
+        forms:{v2:newProgress(),v3:newProgress()}});
+    if(saveNewData()){event.target.reset();document.getElementById("verbLearnV2").checked=true;
+        document.getElementById("verbLearnV3").checked=true;
+        feedback.textContent="✅ Verb saved; V2 and V3 tracked separately.";}
+    renderIrregularList();renderDailyCounts();
+    if(document.getElementById("irregularMode").style.display==="block"&&!activeDrill)nextDrill("irregular");
+}
+function renderIrregularList(){
+    const root=document.getElementById("irregularList");root.replaceChildren();
+    root.append(makeNode("p",irregularItems.length+" saved verbs","exercise-note"));
+    for(const item of irregularItems){
+        const row=makeNode("div",null,"exercise-list-row");
+        row.append(makeNode("strong",[item.v1,item.v2||"—",item.v3||"—"].join(" → ")));
+        for(const form of ["v2","v3"]){
+            const label=makeNode("label");
+            const box=makeNode("input");box.type="checkbox";box.checked=item["enabled"+form.toUpperCase()];
+            box.disabled=!item[form];box.style.width="18px";box.style.minHeight="18px";
+            box.onchange=()=>{item["enabled"+form.toUpperCase()]=box.checked;saveNewData();renderDailyCounts();nextDrill("irregular");};
+            label.append(box,document.createTextNode(" Practice "+form.toUpperCase()+" ("+item.forms[form].stage+", next "+item.forms[form].dueDay+")"));
+            row.append(label,makeNode("br"));
+        }
+        const remove=makeNode("button","Delete verb","danger-button");
+        remove.onclick=()=>{if(!confirm("Delete this irregular verb?"))return;
+            irregularItems=irregularItems.filter(v=>v.id!==item.id);
+            delete writingHistory["i:"+item.id+":v2"];delete writingHistory["i:"+item.id+":v3"];
+            saveNewData();renderIrregularList();nextDrill("irregular");};
+        row.append(remove);root.append(row);
+    }
+}
+// Writing is scheduled for vocabulary / forms the user has successfully typed.
+// Grammar cues are deliberately conservative; unknown words get a generally usable prompt.
+const WRITING_GRAMMAR_RULES = [
+ {test:/^(avoid|enjoy|consider|finish|give up|keep on)$/i,options:[
+    {name:"Gerund (verb + -ing)",task:"Write about an activity you avoid, enjoy or consider doing."}]},
+ {test:/^(achieve|accomplish|improve|learn|develop)$/i,options:[
+    {name:"Present Perfect",task:"Write about something you have achieved or learned recently."},
+    {name:"Past Simple",task:"Describe a specific past experience using the target expression."}]},
+ {test:/^(bring up|come across|find out|look after|figure out)$/i,options:[
+    {name:"Past Simple",task:"Describe a past situation using the whole expression."},
+    {name:"Present Perfect",task:"Describe a relevant experience using the whole expression."}]}
+];
+function writingOptions(source){
+    if(source.kind==="irregular"){
+        if(source.form==="v2") return [
+            {name:"Past Simple + because",task:"Write a past event and explain why it happened using ‘because’."},
+            {name:"Past Simple + when",task:"Write about something that happened when another event occurred."},
+            {name:"Past Simple + after",task:"Describe what happened after another past event."}];
+        return [
+            {name:"Present Perfect (have/has + V3)",task:"Write about an experience or an action with a connection to the present."},
+            {name:"Past Perfect (had + V3)",task:"Write about something that had happened before another past event."}];
+    }
+    const word=source.item.english.trim().toLowerCase();
+    const special=WRITING_GRAMMAR_RULES.find(rule=>rule.test.test(word));
+    if(special)return special.options;
+    if(source.item.wordType==="noun")return [
+        {name:"Relative Clauses (which/that)",task:"Describe something using a relative clause."},
+        {name:"Present Simple",task:"Explain what the target word means or how it is used in everyday life."}];
+    if(source.item.wordType==="adjective")return [
+        {name:"Present Simple + because",task:"Express an opinion using the target word and explain it with ‘because’."},
+        {name:"Relative Clauses",task:"Describe a person or thing using a relative clause and the target word."}];
+    return [
+        {name:"Present Simple",task:"Write a natural sentence about everyday life using the target word or entire expression."},
+        {name:"Past Simple",task:"Write a natural sentence about a past situation using the target word or expression."}];
+}
+function allWritingSources(){
+    return [
+        ...vocabularyItems.filter(item=>item.progress.completed>0).map(item=>({id:"v:"+item.id,kind:"vocab",item,progress:item.progress})),
+        ...allIrregularForms().filter(v=>v.progress.completed>0).map(v=>({...v,id:"i:"+v.id,kind:"irregular"}))
+    ];
+}
+function unlockWriting(drill){
+    const id=drill.kind==="vocab"?"v:"+drill.id:"i:"+drill.id;
+    if(!writingHistory[id])writingHistory[id]={dueDay:todayKey(),step:0,lastGrammar:"",entries:[]};
+}
+function writingDueSources(){
+    return allWritingSources().filter(source=>writingHistory[source.id] &&
+        String(writingHistory[source.id].dueDay || todayKey())<=todayKey());
+}
+function ensureWritingPlan(){
+    const log=dayLog();
+    const available=new Map(allWritingSources().map(source=>[source.id,source]));
+    log.writingPlan=log.writingPlan.filter(id=>available.has(id));
+    const due=writingDueSources().filter(source=>!log.writingPlan.includes(source.id));
+    const vocabPlanned=log.writingPlan.filter(id=>id.startsWith("v:")).length;
+    const verbPlanned=log.writingPlan.length-vocabPlanned;
+    due.sort((a,b)=> {
+        const aHistory=writingHistory[a.id],bHistory=writingHistory[b.id];
+        return String(aHistory.dueDay).localeCompare(String(bHistory.dueDay)) ||
+            aHistory.step-bHistory.step || deterministicRank(a.id)-deterministicRank(b.id);
+    });
+    while(log.writingPlan.length<WRITING_DAILY_LIMIT && due.length){
+        const plannedV=log.writingPlan.filter(id=>id.startsWith("v:")).length;
+        const plannedI=log.writingPlan.length-plannedV;
+        const desired=plannedV<=plannedI?"vocab":"irregular";
+        const pick=Math.max(0,due.findIndex(source=>source.kind===desired));
+        log.writingPlan.push(due.splice(pick,1)[0].id);
+    }
+    saveNewData();return log.writingPlan;
+}
+function chooseWritingGrammar(source){
+    const options=writingOptions(source);
+    const history=writingHistory[source.id];
+    const log=dayLog();
+    const already=log.writing.filter(id=>writingHistory[id]).map(id=>writingHistory[id].lastGrammar);
+    const available=options.filter(opt=>opt.name!==history.lastGrammar);
+    const choices=available.length?available:options;
+    return choices.sort((a,b)=>already.filter(x=>x===a.name).length-already.filter(x=>x===b.name).length)[0];
+}
+function showWritingMode(){hideAllModes();document.getElementById("writingMode").style.display="block";
+    activeWriting=null;nextWriting();renderDailyCounts();}
+function nextWriting(){
+    const root=document.getElementById("writingExercise"),log=dayLog();
+    const remaining=ensureWritingPlan().filter(id=>!log.writing.includes(id));
+    const source=allWritingSources().find(s=>s.id===remaining[0]);
+    root.replaceChildren();
+    if(!source){activeWriting=null;currentExerciseId=null;
+        root.append(makeNode("p","✅ No sentence-writing tasks left for today. Learn vocabulary / verbs to unlock future tasks."));
+        renderDailyCounts();return;}
+    activeWriting={source,grammar:chooseWritingGrammar(source)};
+    startNewStudyExercise("writing",source.id);
+    const word=source.kind==="vocab"?source.item.english:source.item[source.form];
+    root.append(makeNode("p",source.kind==="vocab"?"Vocabulary phrase":"Irregular verb · "+source.form.toUpperCase(),"exercise-note"));
+    root.append(makeNode("h3",word));
+    if(source.kind==="vocab")root.append(makeNode("p",source.item.turkish));
+    else root.append(makeNode("p",source.item.v1+" → "+source.item.v2+" → "+source.item.v3));
+    root.append(makeNode("p","Grammar: "+activeWriting.grammar.name,"daily-count"));
+    root.append(makeNode("p",activeWriting.grammar.task));
+    const form=makeNode("form");const text=makeNode("textarea");text.rows=4;text.required=true;
+    text.placeholder="Write your own English sentence...";text.maxLength=2000;
+    const submit=makeNode("button","Complete sentence","primary-button");submit.type="submit";
+    form.onsubmit=event=>{event.preventDefault();completeWriting(text.value);};
+    form.append(text,submit);root.append(form);
+    root.append(makeNode("p","This is a writing task, not an automatic grammar examination.","exercise-note"));
+    renderDailyCounts();
+}
+function completeWriting(text){
+    if(!activeWriting||!text.trim())return;
+    const {source,grammar}=activeWriting;
+    const history=writingHistory[source.id];if(!history)return;
+    const entries=Array.isArray(history.entries)?history.entries:[];
+    entries.push({date:new Date().toISOString(),grammar:grammar.name,sentence:text.trim().slice(0,2000)});
+    history.entries=entries.slice(-30);history.lastGrammar=grammar.name;
+    history.step=Math.min((Number(history.step)||0)+1,PRACTICE_INTERVALS.length);
+    const index=Math.min(history.step-1, PRACTICE_INTERVALS.length-1);
+    history.dueDay=dayAfter([3,7,14,30,60,90][index]);
+    finishNewStudyExercise("writing",source.id);
+    saveNewData();activeWriting=null;
+    const root=document.getElementById("writingExercise");
+    root.replaceChildren();
+    root.append(makeNode("h3","✅ Sentence completed"));
+    root.append(makeNode("p",text.trim().slice(0,2000),"answer-text"));
+    root.append(makeNode("p","Grammar focus: "+grammar.name+" · No automatic grammar scoring was applied.","exercise-note"));
+    const row=makeNode("div",null,"exercise-action-row");
+    const listen=makeNode("button","🔊 Listen to my sentence","secondary-button");
+    listen.onclick=()=>speakEnglishSentence(text.trim().slice(0,2000));
+    const next=makeNode("button","Next sentence →","primary-button");next.onclick=nextWriting;
+    row.append(listen,next);root.append(row);renderDailyCounts();
+}
+// Fill in the Blank uses its original adaptive picker without a daily cap.
+// The saved blankPlan from earlier versions is retained for backup compatibility,
+// but it no longer limits which eligible sentences can be practiced.
+// Populate daily counts after app navigation (all sections exist by now).
 
 // ======================================================
 // START
